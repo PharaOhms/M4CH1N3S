@@ -1,1 +1,82 @@
-10.129.217.100
+10.129.21.15
+
+
+TASK 1
+
+How many TCP ports are open on the machine?
+
+*
+3
+
+Hide Answer
+TASK 2
+
+When visiting the web service using the IP address, what is the domain that we are being redirected to?
+
+*****.**b
+unika.htb
+
+Hide Answer
+TASK 3
+
+Which scripting language is being used on the server to generate webpages?
+
+***
+php
+
+Hide Answer
+TASK 4
+
+What is the name of the URL parameter which is used to load different language versions of the webpage?
+
+***e
+page
+
+Hide Answer
+TASK 5
+
+Which of the following values for the `page` parameter would be an example of exploiting a Local File Include (LFI) vulnerability: "french.html", "//10.10.14.6/somefile", "../../../../../../../../windows/system32/drivers/etc/hosts", "minikatz.exe"
+
+../../../../../../../../*******/********/*******/***/****s
+../../../../../../../../windows/system32/drivers/etc/hosts
+
+Hide Answer
+TASK 6
+
+Which of the following values for the `page` parameter would be an example of exploiting a Remote File Include (RFI) vulnerability: "french.html", "//10.10.14.6/somefile", "../../../../../../../../windows/system32/drivers/etc/hosts", "minikatz.exe"
+
+//**.**.**.*/*******e
+//10.10.14.6/somefile
+
+Hide Answer
+TASK 7
+
+What does NTLM stand for?
+
+*** ********** *** ******r
+New Technology LAN Manager
+
+Hide Answer
+TASK 8
+
+Which flag do we use in the Responder utility to specify the network interface?
+
+**
+-I
+
+Hide Answer
+TASK 9
+
+There are several tools that take a NetNTLMv2 challenge/response and try millions of passwords to see if any of them generate the same response. One such tool is often referred to as `john`, but the full name is what?.
+
+**** *** *****r
+john the ripper
+
+
+https://github.com/lgandx/Responder
+
+
+
+
+
+
