@@ -1,0 +1,64 @@
+BLACKBOX INE 1
+[+]FASE DE RECONOCIMIENTO[+]
+sudo nmap -sN 172.16.64.0/24
+
+Nmap scan report for 172.16.64.101
+PORT     STATE         SERVICE
+22/tcp   open|filtered ssh
+8080/tcp open|filtered http-proxy
+9080/tcp open|filtered glrpc
+MAC Address: 00:50:56:A0:A5:BB (VMware)
+
+Nmap scan report for 172.16.64.140
+Host is up (0.39s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+80/tcp open|filtered http
+MAC Address: 00:50:56:A0:80:A8 (VMware)
+
+Nmap scan report for 172.16.64.182
+Host is up (0.39s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+22/tcp open|filtered ssh
+MAC Address: 00:50:56:A0:7D:CA (VMware)
+
+Nmap scan report for 172.16.64.140
+Host is up (0.39s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+80/tcp open|filtered http
+MAC Address: 00:50:56:A0:80:A8 (VMware)
+
+Nmap scan report for 172.16.64.182
+Host is up (0.39s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE         SERVICE
+22/tcp open|filtered ssh
+MAC Address: 00:50:56:A0:7D:CA (VMware)
+
+
+[+] BOX1 172.16.64.101 [+]
+nmap -sC -sV -p22,8080,9080  172.16.64.101 -oN target
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-05-05 20:50 CEST
+Nmap scan report for 172.16.64.101
+Host is up (0.14s latency).
+
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   2048 7f:b7:1c:3d:55:b3:9d:98:58:11:17:ef:cc:af:27:67 (RSA)
+|   256 5f:b9:93:e2:ec:eb:f7:08:e4:bb:82:d0:df:b9:b1:56 (ECDSA)
+|_  256 db:1f:11:ad:59:c1:3f:0c:49:3d:b0:66:10:fa:57:21 (ED25519)
+8080/tcp open  http    Apache Tomcat/Coyote JSP engine 1.1
+| http-methods:
+|_  Potentially risky methods: PUT DELETE
+|_http-server-header: Apache-Coyote/1.1
+|_http-title: Apache2 Ubuntu Default Page: It works
+9080/tcp open  http    Apache Tomcat/Coyote JSP engine 1.1
+| http-methods:
+|_  Potentially risky methods: PUT DELETE
+|_http-title: Apache2 Ubuntu Default Page: It works
+|_http-server-header: Apache-Coyote/1.1
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
