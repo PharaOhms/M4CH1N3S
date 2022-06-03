@@ -1,0 +1,19 @@
+10.10.11.107
+ttl 63
+
+[+]NMAP[+]
+PORT   STATE SERVICE VERSION
+23/tcp open  telnet?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, GenericLines, GetRequest, HTTPOptions, Help, RPCCheck, RTSPRequest, tn3270: 
+|     JetDirect
+|     Password:
+|   NULL: 
+|_    JetDirect
+
+PORT      STATE  SERVICE
+161/udp   open   snmp
+
+[+]snmpwalk[+]
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-snmp
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-snmp#oid-example
