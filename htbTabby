@@ -47,3 +47,6 @@ http://10.10.10.194:8080/manager/text
 FAIL - Unknown command [/text]
 
 https://tomcat.apache.org/tomcat-8.5-doc/host-manager-howto.html
+❯ curl -u tomcat:$3cureP4s5w0rd123! http://10.10.10.194:8080/manager/text/list
+
+
