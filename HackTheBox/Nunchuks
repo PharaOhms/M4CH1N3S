@@ -65,7 +65,7 @@ david
 
 [+]PRIVILAGE ESCALATION[+]  PERL GTFObins 
 david@nunchucks:~$ cat user.txt 
-6cdeb7f1a50725dfcb5431b2f194ef53
+
 
 david@nunchucks:/usr/bin$ getcap /usr/bin/perl
 /usr/bin/perl = cap_setuid+ep
@@ -88,4 +88,4 @@ root@nunchucks:/tmp# whoami
 root
 
 root@nunchucks:/tmp# cat /root/root.txt 
-c03055d144704c401032622547e8e71a
+
