@@ -154,8 +154,7 @@ capture cookie session response with burp
  
  [+]USERFLAG[+]
  www-data@validation:/home/htb$ cat user.txt
- 9d60c098ca9838060aac44bf70499f84
- 
+
  
  [+]PRIVILAGE ESCALATION[+]
  www-data@validation:/var/www/html$ cat config.php
@@ -175,4 +174,4 @@ id
 uid=0(root) gid=0(root) groups=0(root)
  
 cat root.txt
-16e92069a233fb4e127ec741d6b1cc64
+
