@@ -76,7 +76,7 @@ return\svc-printer
 
 [+]UserFlag[+]
 *Evil-WinRM* PS C:\Users\svc-printer\Desktop> type user.txt
-cea0ac1e392d4475f7d76ecedf0283ed
+
 
 
 [+]PRIVILAGE ESCALATION[+]
@@ -155,4 +155,4 @@ nt authority\system
 
 C:\Windows\system32>type C:\Users\Administrator\Desktop\root.txt
 type C:\Users\Administrator\Desktop\root.txt
-16ed64641e81883952e5f20ee9ba110b
+
