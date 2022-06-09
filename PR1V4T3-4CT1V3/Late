@@ -29,9 +29,8 @@ image.late.htb
 [+]ssh id_rsa [+]
 ssh svc_acc@10.10.11.156 -i id_rsa
 user.txt
-[+]PRIVIALGE ESCALATION[+]
 
-751d3067405551fd209e7b3422ad24aa > root.txt
+[+]PRIVIALGE ESCALATION[+]
 
 [+]SUID ROOT[+]
 Writable folder: /dev/shm
@@ -73,9 +72,3 @@ bash-4.4# id
 
 bash-4.4# cat /root/root.txt 
 [+]root.txt[+]
-
-
-
-
-
-
