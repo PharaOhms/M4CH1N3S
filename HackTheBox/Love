@@ -83,7 +83,7 @@ love\phoebe
 
 C:\Users\Phoebe\Desktop>type user.txt
 type user.txt
-b46f133cc889e4396ffe345a3ebe78b0
+
 
 
 [+]PRIVILAGE ESCALATION[+]
@@ -129,4 +129,3 @@ nt authority\system
 
 C:\Users\Administrator\Desktop>type root.txt
 type root.txt
-27be8a092531b17c52627e2c05299ced
